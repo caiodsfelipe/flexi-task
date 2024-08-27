@@ -1,0 +1,61 @@
+.home-container {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    text-align: center;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    position: fixed;
+    justify-content: center;
+    width: 100%;
+}
+
+.home-container-center {
+    width: 80%;
+    max-width: 600px;
+}
+
+.header h1 {
+    color: var(--primary-color);
+}
+
+.intro-section {
+    margin: 30px 0;
+}
+
+.intro-section h2 {
+    font-size: 2rem;
+    color: #333;
+}
+
+.intro-section p {
+    font-size: 1.2rem;
+    color: #666;
+    margin-top: 10px;
+}
+
+.features-section {
+    background-color: var(--background-color);
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.features-section h3 {
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.features-section ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.features-section li {
+    font-size: 1.1rem;
+    color: #555;
+    margin-top: 10px;
+}
+
+.cta-section {
+    margin: 20px 0;
+}

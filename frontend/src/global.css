@@ -1,0 +1,70 @@
+:root {
+    /* Light mode colors */
+    --primary-color: #3f51b5;
+    --primary-light: #757de8;
+    --primary-dark: #002984;
+    --secondary-color: #4caf50;
+    --secondary-light: #80e27e;
+    --secondary-dark: #087f23;
+    --background-color: #f5f5f5;
+    --paper-color: #ffffff;
+    --text-primary: #212121;
+    --text-secondary: #757575;
+
+    /* Dark mode colors */
+    --dark-primary-color: #7986cb;
+    --dark-primary-light: #aab6fe;
+    --dark-primary-dark: #49599a;
+    --dark-secondary-color: #66bb6a;
+    --dark-secondary-light: #98ee99;
+    --dark-secondary-dark: #338a3e;
+    --dark-background-color: #121212;
+    --dark-paper-color: #1e1e1e;
+    --dark-text-primary: #ffffff;
+    --dark-text-secondary: #b0bec5;
+}
+
+[data-theme="dark"] {
+    --primary-color: #7986cb;
+    --primary-light: #aab6fe;
+    --primary-dark: #49599a;
+    --secondary-color: #66bb6a;
+    --secondary-light: #98ee99;
+    --secondary-dark: #338a3e;
+    --background-color: #121212;
+    --paper-color: #1e1e1e;
+    --text-primary: #ffffff;
+    --text-secondary: #b0bec5;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-primary);
+}
+
+/* Dark mode styles */
+body.dark-mode {
+    background-color: var(--dark-background-color)!important;
+    color: var(--dark-text-primary)!important;
+}
+
+/* Add any other global styles here */
+
+/* Example usage of colors */
+.primary-button {
+    background-color: var(--primary-color) !important;
+    color: var(--paper-color) !important;
+}
+
+.dark-mode .primary-button {
+    background-color: var(--dark-primary-color)!important;
+    color: var(--dark-paper-color)!important;
+}
+
+.secondary-text {
+    color: var(--text-secondary) !important;
+}
+
+.dark-mode .secondary-text {
+    color: var(--dark-text-secondary)!important;
+}
