@@ -29,7 +29,7 @@ const SchedulerPage = () => {
     // Handle submitting an event (create or update)
     const handleConfirm = useCallback((event, action) => {
         console.log('Confirmed event:', event, 'Action:', action);
-        const { event_id, id, title, start, end, priority, color, textColor, notificationTime, ...otherFields } = event;
+        const { event_id, id, title, start, end, priority, notificationTime, ...otherFields } = event;
         const apiCall = action === 'edit' ? memoizedUpdateTask : memoizedCreateTask;
 
         const startDate = new Date(start);
@@ -38,6 +38,26 @@ const SchedulerPage = () => {
         if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
             console.error("Invalid date detected:", { start, end });
             return Promise.reject("Invalid date detected. Please try again.");
+        }
+
+        // Set color and textColor based on priority
+        let color, textColor;
+        switch (priority) {
+            case 'high':
+                color = '#FF4136';
+                textColor = '#FFFFFF';
+                break;
+            case 'medium':
+                color = '#FFDC00';
+                textColor = '#000000';
+                break;
+            case 'low':
+                color = '#2ECC40';
+                textColor = '#FFFFFF';
+                break;
+            default:
+                color = '#3174ad';
+                textColor = '#FFFFFF';
         }
 
         const eventToSubmit = {
@@ -49,7 +69,7 @@ const SchedulerPage = () => {
             priority,
             color,
             textColor,
-            notificationTime: parseInt(notificationTime, 10) // Parse as integer
+            notificationTime: parseInt(notificationTime, 10)
         };
 
         console.log('Event to submit:', eventToSubmit);
@@ -286,15 +306,16 @@ const SchedulerPage = () => {
 
     return (
         <div className="scheduler">
+
             <Box sx={{ flexGrow: 1 }}>
                 <Toolbar>
-                    <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
-                        Your Schedule
+                    <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
+                    Have a nice day!
                     </Typography>
                 </Toolbar>
             </Box>
 
-            <Box sx={{ mt: 1 }} />
+            <Box sx={{ mt: 2 }} />
 
             <div className='scheduler-container'>
                 <div className='schedule'>
@@ -319,8 +340,6 @@ const SchedulerPage = () => {
                                 { name: "start", type: "date", config: { label: "Start Date", required: true } },
                                 { name: "end", type: "date", config: { label: "End Date", required: true } },
                                 { name: "priority", type: "select", config: { label: "Priority", options: priorityOptions, required: true } },
-                                { name: "color", type: "input", config: { label: "Color" } },
-                                { name: "textColor", type: "input", config: { label: "Text Color" } },
                                 { name: "notificationTime", type: "select", config: { 
                                     label: "Notification Time", 
                                     options: [

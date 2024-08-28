@@ -31,7 +31,7 @@ const Register = () => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        minHeight: '90vh',
+        minHeight: '70vh',
       }}
     >
     <Container maxWidth="xs">

@@ -9,8 +9,6 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
 import Badge from '@mui/material/Badge';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -23,13 +21,30 @@ import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import HomeIcon from '@mui/icons-material/Home';
 import Box from '@mui/material/Box';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import IconButton from '@mui/material/IconButton';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { styled } from '@mui/material/styles';
 
-function AppContent({ toolbarContent }) {
+const StyledAppBar = styled(AppBar)(({ theme }) => ({
+  backgroundColor: 'var(--nav-background-color)',
+  color: 'var(--nav-text-color)',
+  boxShadow: 'none', // Light shadow for the AppBar
+  borderBottom: '1px solid #f3f3f3',
+}));
+
+const StyledToolbar = styled(Toolbar)(({ theme }) => ({
+  justifyContent: 'space-between',
+}));
+
+function AppContent() {
   const { loading } = useAuth();
   const [openNotifications, setOpenNotifications] = useState(false);
   const [openSettings, setOpenSettings] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const unsubscribe = subscribeToNotifications((notification) => {
@@ -74,7 +89,7 @@ function AppContent({ toolbarContent }) {
         contrastText: '#ffffff',
       },
       background: {
-        default: '#f5f5f5',
+        default: '#fff',
         paper: '#ffffff',
       },
       text: {
@@ -86,7 +101,7 @@ function AppContent({ toolbarContent }) {
       MuiAppBar: {
         styleOverrides: {
           root: {
-            backgroundColor: '#1e1e1e',
+            backgroundColor: '#fff',
           },
         },
       },
@@ -104,7 +119,7 @@ function AppContent({ toolbarContent }) {
               },
             },
             '&.MuiButton-containedSecondary': {
-              backgroundColor: 'var(--secondary-color)',
+              backgroundColor: 'var(--button-secondary-text-color)',
               color: 'var(--button-text-color)',
               '&:hover': {
                 backgroundColor: 'var(--secondary-dark)',
@@ -121,8 +136,8 @@ function AppContent({ toolbarContent }) {
               },
             },
             '&.MuiButton-outlinedSecondary': {
-              color: 'var(--secondary-color)',
-              borderColor: 'var(--secondary-color)',
+              color: 'var(--button-secondary-text-color)',
+              borderColor: 'var(--button-secondary-text-color)',
               '&:hover': {
                 backgroundColor: 'var(--secondary-light)',
                 color: 'var(--button-text-color)',
@@ -137,51 +152,55 @@ function AppContent({ toolbarContent }) {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            FlexiTask
-          </Typography>
-          {toolbarContent}
-          <IconButton 
-            color="inherit" 
-            aria-label="notifications"
-            onClick={handleNotificationClick}
-          >
-            <Badge badgeContent={unreadCount} color="secondary">
-              <NotificationsIcon />
-            </Badge>
-          </IconButton>
-          <IconButton 
-            color="inherit" 
-            aria-label="settings"
-            onClick={() => setOpenSettings(true)}
-          >
-            <SettingsIcon />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/scheduler" element={<SchedulerPage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/account" element={<AccountManagement />} />
-      </Routes>
-      <NotificationsDialog
-        open={openNotifications}
-        onClose={() => setOpenNotifications(false)}
-        notifications={notifications}
-      />
-      <SettingsDialog
-        open={openSettings}
-        onClose={() => setOpenSettings(false)}
-      />
+      <StyledAppBar position="sticky">
+        <StyledToolbar>
+          {location.pathname !== '/' && (
+            <IconButton
+              edge="start"
+              sx={{ color: 'var(--nav-text-color)' }}
+              onClick={() => navigate(-1)}
+              aria-label="back"
+            >
+              <ArrowBackIcon />
+            </IconButton>
+          )}
+          <AccessTimeIcon 
+            sx={{ 
+              fontSize: '30px', 
+              color: 'var(--nav-text-color)'
+            }} 
+          />
+          <div style={{ width: 48 }} /> {/* Spacer to balance the layout */}
+        </StyledToolbar>
+      </StyledAppBar>
+      <Box sx={{ paddingTop: '16px' }}> {/* Add padding to account for the sticky AppBar */}
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/scheduler" element={<SchedulerPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/account" element={<AccountManagement />} />
+        </Routes>
+        <NotificationsDialog
+          open={openNotifications}
+          onClose={() => setOpenNotifications(false)}
+          notifications={notifications}
+        />
+        <SettingsDialog
+          open={openSettings}
+          onClose={() => setOpenSettings(false)}
+        />
+        <NavigationBar 
+          unreadCount={unreadCount}
+          handleNotificationClick={handleNotificationClick}
+          setOpenSettings={setOpenSettings}
+        />
+      </Box>
     </ThemeProvider>
   );
 }
 
-function NavigationBar() {
+function NavigationBar({ unreadCount, handleNotificationClick, setOpenSettings }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [value, setValue] = useState(() => {
@@ -200,21 +219,45 @@ function NavigationBar() {
   };
 
   return (
-    <Box sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }}>
+    <Box sx={{ 
+      position: 'fixed', 
+      bottom: 0, 
+      left: 0, 
+      right: 0, 
+      zIndex: 1000,
+      boxShadow: 'none', // Remove the shadow
+      borderTop: '1px solid #f3f3f3', // Add a light border on top
+    }}>
       <BottomNavigation 
         value={value} 
         onChange={handleChange} 
         showLabels
         className="bottom-nav"
+        sx={{
+          boxShadow: 'none', // Ensure no shadow on the BottomNavigation component
+          backgroundColor: 'var(--nav-background-color)', // Match the AppBar background color
+        }}
       >
         <BottomNavigationAction 
-          label="Home" 
           icon={<HomeIcon />} 
           className="bottom-nav-item"
         />
         <BottomNavigationAction 
-          label="Account" 
           icon={<AccountCircleIcon />} 
+          className="bottom-nav-item"
+        />
+        <BottomNavigationAction 
+          icon={
+            <Badge badgeContent={unreadCount} color="secondary">
+              <NotificationsIcon />
+            </Badge>
+          }
+          onClick={handleNotificationClick}
+          className="bottom-nav-item"
+        />
+        <BottomNavigationAction 
+          icon={<SettingsIcon />}
+          onClick={() => setOpenSettings(true)}
           className="bottom-nav-item"
         />
       </BottomNavigation>
@@ -222,12 +265,11 @@ function NavigationBar() {
   );
 }
 
-function App({ toolbarContent }) {
+function App() {
   return (
     <AuthProvider>
       <Router>
-        <AppContent toolbarContent={toolbarContent} />
-        <NavigationBar />
+        <AppContent />
       </Router>
     </AuthProvider>
   );

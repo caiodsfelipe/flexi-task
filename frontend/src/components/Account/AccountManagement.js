@@ -4,12 +4,14 @@ import MuiAlert from '@mui/material/Alert';
 import axios from 'axios';
 import { AuthContext } from '../../contexts/AuthContext';
 import Box from '@mui/material/Box';
+import { useNavigate } from 'react-router-dom';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
 const AccountManagement = () => {
+  const navigate = useNavigate();
   const [user, setUser] = useState({
     username: '',
     email: '',
@@ -37,13 +39,20 @@ const AccountManagement = () => {
         setLoading(false);
       } catch (err) {
         console.error('Error fetching user data:', err);
-        setError('Failed to load user data. Please try again.');
+        if (err.response && err.response.status === 401) {
+          console.log('Unauthorized access. Redirecting to login page.');
+          localStorage.removeItem('token'); // Clear the invalid token
+          setIsAuthenticated(false); // Update auth context
+          navigate('/login'); // Redirect to login page
+        } else {
+          setError('Failed to load user data. Please try again.');
+        }
         setLoading(false);
       }
     };
 
     fetchUserData();
-  }, []);
+  }, [navigate, setIsAuthenticated]);
 
   const handleInputChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
@@ -97,7 +106,7 @@ const AccountManagement = () => {
   if (!user) return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '90vh' }}><Typography>No user data available.</Typography></Box>;
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '90vh' }}>
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '70vh' }}>
     <Container maxWidth="sm">
       <Box sx={{ m: 4 }} />
       <Typography variant="h4" gutterBottom>My Account</Typography>
