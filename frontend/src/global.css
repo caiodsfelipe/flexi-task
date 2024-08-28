@@ -3,38 +3,62 @@
     --primary-color: #3f51b5;
     --primary-light: #757de8;
     --primary-dark: #002984;
-    --secondary-color: #4caf50;
-    --secondary-light: #80e27e;
-    --secondary-dark: #087f23;
-    --background-color: #f5f5f5;
+    --background-color: #fff;
     --paper-color: #ffffff;
     --text-primary: #212121;
     --text-secondary: #757575;
+    --button-text-color: #ffffff;
 
     /* Dark mode colors */
     --dark-primary-color: #7986cb;
     --dark-primary-light: #aab6fe;
     --dark-primary-dark: #49599a;
-    --dark-secondary-color: #66bb6a;
-    --dark-secondary-light: #98ee99;
-    --dark-secondary-dark: #338a3e;
     --dark-background-color: #121212;
     --dark-paper-color: #1e1e1e;
     --dark-text-primary: #ffffff;
     --dark-text-secondary: #b0bec5;
+
+    /* Navigation background colors */
+    --nav-background-color: #1e1e1e;
+    --nav-text-color: #fff;
+    --dark-nav-background-color: #1e1e1e;
+    --dark-nav-text-color: #fff;
+
+    --dark-button-text-color: #ffffff;
+
+    /* Button background colors */
+    --button-primary-bg: #1e1e1e;
+    --button-primary-bg-hover: #2e2e2e;
+    --button-secondary-bg: #ffffff;
+    --button-secondary-bg-hover: #f0f0f0;
+    --button-primary-text-color: #ffffff;
+    --button-secondary-text-color: #1e1e1e;
+
+    /* Dark mode button colors */
+    --dark-button-primary-bg: #7986cb;
+    --dark-button-primary-bg-hover: #5c6bc0;
+    --dark-button-secondary-bg: #49599a;
+    --dark-button-secondary-bg-hover: #3f51b5;
 }
 
 [data-theme="dark"] {
     --primary-color: #7986cb;
     --primary-light: #aab6fe;
     --primary-dark: #49599a;
-    --secondary-color: #66bb6a;
-    --secondary-light: #98ee99;
-    --secondary-dark: #338a3e;
     --background-color: #121212;
     --paper-color: #1e1e1e;
     --text-primary: #ffffff;
     --text-secondary: #b0bec5;
+
+    --nav-background-color: var(--dark-nav-background-color);
+    --nav-text-color: var(--dark-nav-text-color);
+
+    --button-text-color: var(--dark-button-text-color);
+
+    --button-primary-bg: var(--dark-button-primary-bg);
+    --button-primary-bg-hover: var(--dark-button-primary-bg-hover);
+    --button-secondary-bg: var(--dark-button-secondary-bg);
+    --button-secondary-bg-hover: var(--dark-button-secondary-bg-hover);
 }
 
 body {
@@ -67,4 +91,69 @@ body.dark-mode {
 
 .dark-mode .secondary-text {
     color: var(--dark-text-secondary)!important;
+}
+
+/* Add new class for bottom navigation */
+.bottom-nav {
+    background-color: var(--nav-background-color) !important;
+    color: var(--nav-text-color) !important; /* Add this line */
+}
+
+/* Add this for dark mode */
+body.dark-mode .bottom-nav {
+    background-color: var(--dark-nav-background-color) !important;
+    color: var(--dark-nav-text-color) !important; /* Add this line */
+}
+
+/* Add these new classes for the bottom navigation items */
+.bottom-nav-item {
+    color: var(--nav-text-color) !important;
+}
+
+body.dark-mode .bottom-nav-item {
+    color: var(--dark-nav-text-color) !important;
+}
+
+/* You can add specific button styles here if needed */
+.MuiButton-root {
+    font-weight: bold;
+}
+
+/* Dark mode button styles */
+body.dark-mode .MuiButton-containedPrimary {
+    background-color: var(--button-primary-bg) !important;
+    color: var(--button-primary-text-color) !important;
+}
+
+body.dark-mode .MuiButton-containedPrimary:hover {
+    background-color: var(--button-primary-bg-hover) !important;
+}
+
+body.dark-mode .MuiButton-containedSecondary {
+    background-color: var(--button-secondary-bg) !important;
+    color: var(--button-secondary-text-color) !important;
+}
+
+body.dark-mode .MuiButton-containedSecondary:hover {
+    background-color: var(--button-secondary-bg-hover) !important;
+}
+
+body.dark-mode .MuiButton-outlinedPrimary {
+    color: var(--dark-primary-color) !important;
+    border-color: var(--dark-primary-color) !important;
+}
+
+body.dark-mode .MuiButton-outlinedPrimary:hover {
+    background-color: var(--dark-primary-light) !important;
+    color: var(--dark-button-text-color) !important;
+}
+
+body.dark-mode .MuiButton-outlinedSecondary {
+    color: var(--dark-secondary-color) !important;
+    border-color: var(--dark-secondary-color) !important;
+}
+
+body.dark-mode .MuiButton-outlinedSecondary:hover {
+    background-color: var(--dark-secondary-light) !important;
+    color: var(--dark-button-text-color) !important;
 }
