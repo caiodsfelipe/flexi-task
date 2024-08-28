@@ -206,7 +206,7 @@ const EventDialog = ({ open, onClose, onSubmit, currentEvent, priorityOptions })
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={onClose}>Cancel</Button>
+                    <Button color="secondary" onClick={onClose}>Cancel</Button>
                     <Button type="submit" variant="contained" color="primary">
                         {event && event.id ? 'Update' : 'Create'}
                     </Button>

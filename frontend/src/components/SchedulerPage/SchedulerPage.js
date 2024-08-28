@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Scheduler } from "@aldabil/react-scheduler";
 import './SchedulerPage.css';
 import Toolbar from '@mui/material/Toolbar';
@@ -11,7 +11,6 @@ import Button from '@mui/material/Button';
 
 const SchedulerPage = () => {
     const [events, setEvents] = useState([]);
-    const schedulerRef = useRef(null);
     const [updateKey, setUpdateKey] = useState(0);
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [currentFinishedEvent, setCurrentFinishedEvent] = useState(null);
@@ -302,13 +301,15 @@ const SchedulerPage = () => {
                     <ErrorBoundary>
                         <Scheduler
                             key={updateKey}
-                            view="week"
+                            view="month"
                             events={events}
                             onConfirm={handleConfirm}
                             onDelete={handleDelete}
                             onEventDrop={handleEventDrop}
                             alwaysShowAgendaDays={true}
-                            resourceViewMode="vertical"
+                            resourceViewMode="tabs"
+                            disableViewNavigator={false}
+                            navigation={true}
                             draggable={true}
                             editable={true}
                             deletable={true}
