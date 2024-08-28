@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 let listeners = [];
 
 export const subscribeToNotifications = (listener) => {
