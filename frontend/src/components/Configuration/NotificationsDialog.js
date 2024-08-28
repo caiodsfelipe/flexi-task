@@ -26,11 +26,11 @@ const NotificationsDialog = ({ open, onClose, notifications }) => {
                                     }
                                     secondary={
                                         <>
-                                            <Typography variant="body2" color="textSecondary">
+                                            <Typography component="span" variant="body2" color="textSecondary">
                                                 {notification.message || 'No Message'}
                                             </Typography>
                                             {notification.start && (
-                                                <Typography variant="caption" color="textSecondary">
+                                                <Typography component="div" variant="caption" color="textSecondary">
                                                     Start: {new Date(notification.start).toLocaleString()}
                                                 </Typography>
                                             )}

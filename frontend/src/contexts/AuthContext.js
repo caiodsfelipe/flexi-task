@@ -13,17 +13,32 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuthStatus = async () => {
       const token = localStorage.getItem('token');
+      console.log('Token from localStorage:', token);
       if (token) {
         try {
+          console.log('Sending request to /api/auth/me');
           const response = await axios.get('/api/auth/me', {
             headers: { Authorization: `Bearer ${token}` }
           });
-          setUser(response.data);
-          setIsAuthenticated(true);
+          console.log('Full response from API:', response);
+          console.log('User data from API:', response.data);
+          if (response.data && Object.keys(response.data).length > 0) {
+            setUser(response.data);
+            setIsAuthenticated(true);
+          } else {
+            console.warn('API returned empty user data');
+            localStorage.removeItem('token');
+          }
         } catch (error) {
           console.error('Error verifying token:', error);
+          if (error.response) {
+            console.error('Error response:', error.response.data);
+            console.error('Error status:', error.response.status);
+          }
           localStorage.removeItem('token');
         }
+      } else {
+        console.log('No token found in localStorage');
       }
       setLoading(false);
     };

@@ -25,6 +25,7 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import IconButton from '@mui/material/IconButton';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { styled } from '@mui/material/styles';
+import { subscribeToPushNotifications } from './utils/pushNotifications';
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   backgroundColor: 'var(--nav-background-color)',
@@ -54,6 +55,11 @@ function AppContent() {
         return [...prev, notification];
       });
       setUnreadCount(prev => prev + 1);
+    });
+
+    // Subscribe to push notifications
+    subscribeToPushNotifications().catch(error => {
+      console.error('Failed to subscribe to push notifications:', error);
     });
 
     const closeSSE = initializeSSE();

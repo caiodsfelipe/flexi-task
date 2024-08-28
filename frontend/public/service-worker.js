@@ -10,3 +10,16 @@ self.addEventListener('push', function(event) {
         self.registration.showNotification(data.title, options)
     );
 });
+
+self.addEventListener('notificationclick', function(event) {
+    const eventData = event.notification.data;
+    event.notification.close();
+
+    if (eventData && eventData.eventId) {
+        // Open the app and focus on the specific event
+        clients.openWindow(`/scheduler?eventId=${eventData.eventId}`);
+    } else {
+        // Just open the app
+        clients.openWindow('/scheduler');
+    }
+});

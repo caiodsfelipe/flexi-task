@@ -8,6 +8,7 @@ const notificationRoutes = require('./api/notifications');
 const { scheduleAllNotifications } = require('./services/notificationService');
 const SSE = require('express-sse');
 const authRoutes = require('./routes/authRoutes');
+const pushSubscriptionRoutes = require('./routes/pushSubscriptionRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -29,6 +30,9 @@ app.use('/api/notifications', notificationRoutes);
 
 // Include auth routes
 app.use('/api/auth', authRoutes);
+
+// Include push subscription routes
+app.use('/api/push-subscription', pushSubscriptionRoutes);
 
 console.log('MONGODB_URI:', process.env.MONGODB_URI); // Keep this for debugging if needed
 

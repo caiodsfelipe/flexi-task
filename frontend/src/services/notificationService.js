@@ -32,8 +32,8 @@ export const initializeSSE = () => {
             const data = JSON.parse(event.data);
             console.log('Parsed SSE data:', data);
             if (data.type === 'TASK_NOTIFICATION') {
-                console.log('Task notification received:', data.task);
-                pushNotification(data.task);
+                console.log('Task notification received:', data);
+                pushNotification(data);
             } else {
                 console.log('Unknown notification type:', data.type);
             }

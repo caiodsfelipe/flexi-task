@@ -12,11 +12,11 @@ const HomePage = () => {
         <div className="home-container">
             <div className="home-container-center">
                 <header className="header">
-                    <h1>Welcome to FlexiTask</h1>
+                    <h1>Welcome to Tempo</h1>
                 </header>
                 <section className="intro-section">
                     <p>
-                        FlexiTask is your personal scheduling assistant, designed to adapt to your busy life. 
+                        Tempo is your personal scheduling assistant, designed to adapt to your busy life. 
                         Never miss a task again—our app automatically rearranges your schedule to fit your changing priorities.
                     </p>
                 </section>

@@ -54,6 +54,17 @@ const AccountManagement = () => {
     fetchUserData();
   }, [navigate, setIsAuthenticated]);
 
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://js.stripe.com/v3/buy-button.js';
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, [navigate, setIsAuthenticated]);
+
   const handleInputChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
     setIsEdited(true);
@@ -106,51 +117,61 @@ const AccountManagement = () => {
   if (!user) return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '90vh' }}><Typography>No user data available.</Typography></Box>;
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '70vh' }}>
-    <Container maxWidth="sm">
-      <Box sx={{ m: 4 }} />
-      <Typography variant="h4" gutterBottom>My Account</Typography>
-      <TextField
-        fullWidth
-        label="Username"
-        name="username"
-        value={user.username}
-        margin="normal"
-        onChange={handleInputChange}
-      />
-      <TextField
-        fullWidth
-        label="Email"
-        name="email"
-        value={user.email}
-        margin="normal"
-        onChange={handleInputChange}
-      />
-      <TextField
-        fullWidth
-        label="Password"
-        name="password"
-        type="password"
-        value={user.password || ''} // Ensure value is always a string
-        margin="normal"
-        onChange={handleInputChange}
-      />
-      <Box sx={{ m: 2 }} />
-      <Button 
-        variant="contained" 
-        color="primary" 
-        onClick={handleSaveChanges}
-        disabled={!isEdited}
-      >
-        {isEdited ? 'Save Changes' : 'No Changes'}
-      </Button>
-      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
-        <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%' }}>
-          Account updated successfully!
-        </Alert>
-      </Snackbar>
-    </Container>
-    </Box>
+    <div className='account-management'>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '70vh' }}>
+      <Container maxWidth="sm">
+        <Box sx={{ m: 4 }} />
+        <Typography variant="h4" gutterBottom>My Account</Typography>
+        <Typography variant="h6" gutterBottom>Upgrade Your Account</Typography>
+        <stripe-buy-button
+          buy-button-id="buy_btn_1PsspwBAIWiwRgzWmZbQlZzf"
+          publishable-key="pk_test_xALdQa86qg5mkwxVhIppiotu00c4JLTRY3"
+        />
+        <TextField
+          fullWidth
+          label="Username"
+          name="username"
+          value={user.username}
+          margin="normal"
+          onChange={handleInputChange}
+        />
+        <TextField
+          fullWidth
+          label="Email"
+          name="email"
+          value={user.email}
+          margin="normal"
+          onChange={handleInputChange}
+        />
+        <TextField
+          fullWidth
+          label="Password"
+          name="password"
+          type="password"
+          value={user.password || ''} // Ensure value is always a string
+          margin="normal"
+          onChange={handleInputChange}
+        />
+        <Box sx={{ m: 2 }} />
+        <Button 
+          variant="contained" 
+          color="primary" 
+          onClick={handleSaveChanges}
+          disabled={!isEdited}
+        >
+          {isEdited ? 'Save Changes' : 'No Changes'}
+        </Button>
+        
+        <Box sx={{ mb: 10 }} />
+
+        <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+          <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%' }}>
+            Account updated successfully!
+          </Alert>
+        </Snackbar>
+      </Container>
+      </Box>
+    </div>
   );
 };
 

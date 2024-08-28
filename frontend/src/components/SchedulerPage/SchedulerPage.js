@@ -8,8 +8,12 @@ import { createTask, updateTask, getTasks, deleteTask } from '../../api';
 import ErrorBoundary from '../ErrorBoundary';
 import Snackbar from '@mui/material/Snackbar';
 import Button from '@mui/material/Button';
+import { useAuth } from '../../contexts/AuthContext';
 
 const SchedulerPage = () => {
+    const { user, loading } = useAuth();
+    console.log('Current user:', user);
+
     const [events, setEvents] = useState([]);
     const [updateKey, setUpdateKey] = useState(0);
     const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -107,9 +111,10 @@ const SchedulerPage = () => {
         console.log('Deleting event:', deletedId);
         deleteTask(deletedId)
             .then((response) => {
+                console.log('Response from server after deletion:', response);
                 // Check if response and response.data exist
-                if (response && response.data) {
-                    const updatedTasks = response.data;
+                if (response.length > 0) {
+                    const updatedTasks = response;
                     console.log('Updated tasks from server:', updatedTasks);
                     
                     // Update the events state with the new list from the server
@@ -316,15 +321,17 @@ const SchedulerPage = () => {
         }
     }, [currentFinishedEvent, updateTask, rescheduleEvent]);
 
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
     return (
         <div className="scheduler">
-
             <div>
-
                 <Box sx={{ flexGrow: 1 }}>
                     <Toolbar>
                         <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
-                        Have a nice day!
+                        Have a nice day, <span style={{ color: 'var(--primary-color)' }}>{user?.username || 'Guest'}</span>!
                         </Typography>
                     </Toolbar>
                 </Box>

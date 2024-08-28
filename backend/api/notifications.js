@@ -15,7 +15,7 @@ router.get('/stream', (req, res) => {
     });
 
     // Send a test event to the client immediately
-    res.write(`data: ${JSON.stringify({message: 'Connected to notification stream', type: 'TASK_NOTIFICATION'})}\n\n`);
+    res.write(`data: ${JSON.stringify({title: 'Connected to notification stream', message: 'Connected to notification stream', type: 'TASK_NOTIFICATION'})}\n\n`);
 
     const clientId = Date.now();
     const newClient = {

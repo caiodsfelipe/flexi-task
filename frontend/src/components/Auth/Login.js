@@ -9,7 +9,7 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
+  const { isAuthenticated, setIsAuthenticated, setUser } = useContext(AuthContext);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -21,11 +21,21 @@ const Login = () => {
     e.preventDefault();
     try {
       const response = await axios.post('/api/auth/login', { email, password });
-      localStorage.setItem('token', response.data.token);
-      setIsAuthenticated(true);
-      navigate('/scheduler');
+      console.log('Login response:', response.data);
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        setUser(response.data.user);
+        setIsAuthenticated(true);
+        navigate('/scheduler');
+      } else {
+        console.error('No token received from login');
+      }
     } catch (error) {
       console.error('Login failed:', error);
+      if (error.response) {
+        console.error('Error response:', error.response.data);
+        console.error('Error status:', error.response.status);
+      }
     }
   };
 

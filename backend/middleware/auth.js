@@ -3,7 +3,11 @@ const User = require('../models/User'); // Make sure to import your User model
 
 module.exports = async function(req, res, next) {
   try {
-    const token = req.header('Authorization')?.split(' ')[1];
+    const authHeader = req.header('Authorization');
+    console.log('Full Authorization header:', authHeader);
+
+    const token = authHeader?.split(' ')[1];
+    console.log('Extracted token:', token);
 
     if (!token) {
       return res.status(401).json({ message: 'No token, authorization denied' });

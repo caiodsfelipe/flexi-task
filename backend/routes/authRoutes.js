@@ -36,15 +36,24 @@ router.post('/login', async (req, res) => {
     }
     console.log('User ID at login:', user._id); // Add this line
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.json({ token, user: { id: user._id, username: user.username, email: user.email } });
+    res.json({
+      token,
+      user: {
+        _id: user._id,
+        username: user.username,
+        email: user.email
+        // Add any other user fields you want to send
+      }
+    });
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-router.get('/me', async (req, res) => {
+router.get('/me', auth, async (req, res) => {
   // This route will be protected and will return the current user's data
+  console.log('User from request:', req.user);
   res.send(req.user);
 });
 
