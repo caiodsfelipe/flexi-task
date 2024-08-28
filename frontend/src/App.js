@@ -25,9 +25,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import Box from '@mui/material/Box';
 
 function AppContent({ toolbarContent }) {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { isAuthenticated, loading } = useAuth();
+  const { loading } = useAuth();
   const [openNotifications, setOpenNotifications] = useState(false);
   const [openSettings, setOpenSettings] = useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -58,14 +56,6 @@ function AppContent({ toolbarContent }) {
   const handleNotificationClick = () => {
     setOpenNotifications(true);
     setUnreadCount(0);
-  };
-
-  const handleAccountClick = () => {
-    if (isAuthenticated) {
-      navigate('/account');
-    } else {
-      navigate('/login');
-    }
   };
 
   const theme = createTheme({
