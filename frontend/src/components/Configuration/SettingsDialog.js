@@ -88,7 +88,7 @@ const SettingsDialog = ({ open, onClose }) => {
                     </FormControl>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={onClose}>Cancel</Button>
+                    <Button onClick={onClose} color="secondary">Cancel</Button>
                     <Button onClick={handleSave} variant="contained" color="primary">
                         Save
                     </Button>

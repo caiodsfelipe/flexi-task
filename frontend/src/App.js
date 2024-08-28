@@ -25,9 +25,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import Box from '@mui/material/Box';
 
 function AppContent({ toolbarContent }) {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { isAuthenticated, loading } = useAuth();
+  const { loading } = useAuth();
   const [openNotifications, setOpenNotifications] = useState(false);
   const [openSettings, setOpenSettings] = useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -59,15 +57,7 @@ function AppContent({ toolbarContent }) {
     setOpenNotifications(true);
     setUnreadCount(0);
   };
-
-  const handleAccountClick = () => {
-    if (isAuthenticated) {
-      navigate('/account');
-    } else {
-      navigate('/login');
-    }
-  };
-
+  
   const theme = createTheme({
     palette: {
       mode: 'light',
@@ -75,11 +65,13 @@ function AppContent({ toolbarContent }) {
         main: '#3f51b5',
         light: '#757de8',
         dark: '#002984',
+        contrastText: '#ffffff',
       },
       secondary: {
-        main: '#4caf50',
-        light: '#80e27e',
-        dark: '#087f23',
+        main: '#3f51b5',
+        light: '#757de8',
+        dark: '#002984',
+        contrastText: '#ffffff',
       },
       background: {
         default: '#f5f5f5',
@@ -88,6 +80,56 @@ function AppContent({ toolbarContent }) {
       text: {
         primary: '#212121',
         secondary: '#757575',
+      },
+    },
+    components: {
+      MuiAppBar: {
+        styleOverrides: {
+          root: {
+            backgroundColor: '#1e1e1e',
+          },
+        },
+      },
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            textTransform: 'none',
+          },
+          contained: {
+            '&.MuiButton-containedPrimary': {
+              backgroundColor: 'var(--primary-color)',
+              color: 'var(--button-text-color)',
+              '&:hover': {
+                backgroundColor: 'var(--primary-dark)',
+              },
+            },
+            '&.MuiButton-containedSecondary': {
+              backgroundColor: 'var(--secondary-color)',
+              color: 'var(--button-text-color)',
+              '&:hover': {
+                backgroundColor: 'var(--secondary-dark)',
+              },
+            },
+          },
+          outlined: {
+            '&.MuiButton-outlinedPrimary': {
+              color: 'var(--primary-color)',
+              borderColor: 'var(--primary-color)',
+              '&:hover': {
+                backgroundColor: 'var(--primary-light)',
+                color: 'var(--button-text-color)',
+              },
+            },
+            '&.MuiButton-outlinedSecondary': {
+              color: 'var(--secondary-color)',
+              borderColor: 'var(--secondary-color)',
+              '&:hover': {
+                backgroundColor: 'var(--secondary-light)',
+                color: 'var(--button-text-color)',
+              },
+            },
+          },
+        },
       },
     },
   });
@@ -159,9 +201,22 @@ function NavigationBar() {
 
   return (
     <Box sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }}>
-      <BottomNavigation value={value} onChange={handleChange} showLabels>
-        <BottomNavigationAction label="Home" icon={<HomeIcon />} />
-        <BottomNavigationAction label="Account" icon={<AccountCircleIcon />} />
+      <BottomNavigation 
+        value={value} 
+        onChange={handleChange} 
+        showLabels
+        className="bottom-nav"
+      >
+        <BottomNavigationAction 
+          label="Home" 
+          icon={<HomeIcon />} 
+          className="bottom-nav-item"
+        />
+        <BottomNavigationAction 
+          label="Account" 
+          icon={<AccountCircleIcon />} 
+          className="bottom-nav-item"
+        />
       </BottomNavigation>
     </Box>
   );
