@@ -23,7 +23,7 @@ const Login = () => {
       const response = await axios.post('/api/auth/login', { email, password });
       localStorage.setItem('token', response.data.token);
       setIsAuthenticated(true);
-      navigate('/account');
+      navigate('/scheduler');
     } catch (error) {
       console.error('Login failed:', error);
     }

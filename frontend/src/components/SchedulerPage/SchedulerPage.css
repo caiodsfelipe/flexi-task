@@ -2,6 +2,16 @@
     font-family: Arial, sans-serif;
     padding: 10px;
     text-align: center;
+    height: 90vh;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+}
+
+.scheduler > div {
+    width: 100%;
 }
 
 .scheduler-header h1 {
@@ -34,6 +44,7 @@
 
 .schedule {
     width: 100%;
+    max-width: 900px;
 }
 
 .scheduler-container .rs__week {

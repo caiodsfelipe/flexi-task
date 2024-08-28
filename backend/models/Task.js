@@ -23,7 +23,8 @@ const taskSchema = new mongoose.Schema({
     draggable: { type: Boolean, default: true },
     allDay: { type: Boolean, default: false },
     agendaAvatar: String,
-    notificationTime: Number
+    notificationTime: Number,
+    checked: { type: Boolean, default: false }
 });
 
 // Pre-save hook to auto-increment the id

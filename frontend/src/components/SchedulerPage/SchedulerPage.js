@@ -67,9 +67,10 @@ const SchedulerPage = () => {
             start: startDate,
             end: endDate,
             priority,
-            color,
-            textColor,
-            notificationTime: parseInt(notificationTime, 10)
+            color: event.checked ? '#6EACDA' : color, // Preserve blue color for checked events
+            textColor: event.checked ? '#FFFFFF' : textColor,
+            notificationTime: parseInt(notificationTime, 10),
+            checked: event.checked || false
         };
 
         console.log('Event to submit:', eventToSubmit);
@@ -149,6 +150,7 @@ const SchedulerPage = () => {
                     deletable: true,
                     color: event.color || '#3174ad',
                     textColor: event.textColor || '#ffffff',
+                    checked: event.checked || false
                 }));
                 console.log('Processed events:', processedEvents);
                 const validEvents = validateEventDates(processedEvents);
@@ -224,10 +226,12 @@ const SchedulerPage = () => {
         console.log('Current events:', events);
     }, [events]);
 
-    // Add this new function to check for finished events
+    // Modify this function to check for finished events
     const checkFinishedEvents = useCallback(() => {
         const now = new Date();
-        const finishedEvent = events.find(event => new Date(event.end) < now && !event.rescheduled);
+        const finishedEvent = events.find(event => 
+            new Date(event.end) < now && !event.rescheduled && !event.checked
+        );
         
         if (finishedEvent) {
             setCurrentFinishedEvent(finishedEvent);
@@ -235,7 +239,7 @@ const SchedulerPage = () => {
         }
     }, [events]);
 
-    // Add this function to reschedule the event
+    // Modify the rescheduleEvent function
     const rescheduleEvent = useCallback((event) => {
         const now = new Date();
         let rescheduleDate;
@@ -272,7 +276,8 @@ const SchedulerPage = () => {
             ...event,
             start: rescheduleDate,
             end: new Date(rescheduleDate.getTime() + duration),
-            rescheduled: true
+            rescheduled: true,
+            checked: false // Reset the checked status when rescheduling
         };
 
         handleConfirm(updatedEvent, 'edit');
@@ -284,102 +289,112 @@ const SchedulerPage = () => {
         return () => clearInterval(interval);
     }, [checkFinishedEvents]);
 
-    // Add these handlers for the Snackbar
-    const handleSnackbarClose = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        setOpenSnackbar(false);
-    };
-
-    const handleEventCompleted = () => {
-        setOpenSnackbar(false);
-        // You can add logic here to mark the event as completed if needed
-    };
-
-    const handleEventNotCompleted = () => {
+    const handleEventResponse = useCallback((isCompleted) => {
         setOpenSnackbar(false);
         if (currentFinishedEvent) {
-            rescheduleEvent(currentFinishedEvent);
+            const updatedEvent = { 
+                ...currentFinishedEvent, 
+                checked: isCompleted,
+                color: isCompleted ? '#6EACDA' : currentFinishedEvent.color,
+                textColor: isCompleted ? '#FFFFFF' : currentFinishedEvent.textColor
+            };
+
+            updateTask(currentFinishedEvent.id, updatedEvent)
+                .then(response => {
+                    console.log('Event updated:', response.data);
+                    setEvents(prevEvents => prevEvents.map(event => 
+                        event.id === updatedEvent.id ? updatedEvent : event
+                    ));
+
+                    if (!isCompleted) {
+                        rescheduleEvent(updatedEvent);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating event in database:', error);
+                });
         }
-    };
+    }, [currentFinishedEvent, updateTask, rescheduleEvent]);
 
     return (
         <div className="scheduler">
 
-            <Box sx={{ flexGrow: 1 }}>
-                <Toolbar>
-                    <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
-                    Have a nice day!
-                    </Typography>
-                </Toolbar>
-            </Box>
+            <div>
 
-            <Box sx={{ mt: 2 }} />
+                <Box sx={{ flexGrow: 1 }}>
+                    <Toolbar>
+                        <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
+                        Have a nice day!
+                        </Typography>
+                    </Toolbar>
+                </Box>
 
-            <div className='scheduler-container'>
-                <div className='schedule'>
-                    <ErrorBoundary>
-                        <Scheduler
-                            key={updateKey}
-                            view="month"
-                            events={events}
-                            onConfirm={handleConfirm}
-                            onDelete={handleDelete}
-                            onEventDrop={handleEventDrop}
-                            alwaysShowAgendaDays={true}
-                            resourceViewMode="tabs"
-                            disableViewNavigator={false}
-                            navigation={true}
-                            draggable={true}
-                            editable={true}
-                            deletable={true}
-                            resizable={true}
-                            fields={[
-                                { name: "title", type: "input", config: { label: "Title", required: true } },
-                                { name: "start", type: "date", config: { label: "Start Date", required: true } },
-                                { name: "end", type: "date", config: { label: "End Date", required: true } },
-                                { name: "priority", type: "select", config: { label: "Priority", options: priorityOptions, required: true } },
-                                { name: "notificationTime", type: "select", config: { 
-                                    label: "Notification Time", 
-                                    options: [
-                                        { value: 5, text: "5 minutes before" },
-                                        { value: 10, text: "10 minutes before" },
-                                        { value: 15, text: "15 minutes before" },
-                                        { value: 30, text: "30 minutes before" },
-                                        { value: 60, text: "1 hour before" },
-                                        { value: 120, text: "2 hours before" },
-                                        { value: 1440, text: "1 day before" }
-                                    ]
-                                }}
-                            ]}
-                        />
-                    </ErrorBoundary>
+                <Box sx={{ mt: 2 }} />
+
+                <div className='scheduler-container'>
+                    <div className='schedule'>
+                        <ErrorBoundary>
+                            <Scheduler
+                                key={updateKey}
+                                view="month"
+                                events={events}
+                                onConfirm={handleConfirm}
+                                onDelete={handleDelete}
+                                onEventDrop={handleEventDrop}
+                                alwaysShowAgendaDays={true}
+                                resourceViewMode="tabs"
+                                disableViewNavigator={false}
+                                navigation={true}
+                                draggable={true}
+                                editable={true}
+                                deletable={true}
+                                resizable={true}
+                                fields={[
+                                    { name: "title", type: "input", config: { label: "Title", required: true } },
+                                    { name: "start", type: "date", config: { label: "Start Date", required: true } },
+                                    { name: "end", type: "date", config: { label: "End Date", required: true } },
+                                    { name: "priority", type: "select", config: { label: "Priority", options: priorityOptions, required: true } },
+                                    { name: "notificationTime", type: "select", config: { 
+                                        label: "Notification Time", 
+                                        options: [
+                                            { value: 5, text: "5 minutes before" },
+                                            { value: 10, text: "10 minutes before" },
+                                            { value: 15, text: "15 minutes before" },
+                                            { value: 30, text: "30 minutes before" },
+                                            { value: 60, text: "1 hour before" },
+                                            { value: 120, text: "2 hours before" },
+                                            { value: 1440, text: "1 day before" }
+                                        ]
+                                    }}
+                                ]}
+                            />
+                        </ErrorBoundary>
+                    </div>
                 </div>
+
+                <Box sx={{ mb: 10 }} />
+
+                <Snackbar
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'center',
+                    }}
+                    open={openSnackbar}
+                    autoHideDuration={null}
+                    onClose={() => setOpenSnackbar(false)}
+                    message={`Did you complete the task: ${currentFinishedEvent?.title}?`}
+                    action={
+                        <React.Fragment>
+                            <Button color="primary" size="small" onClick={() => handleEventResponse(true)}>
+                                Yes
+                            </Button>
+                            <Button color="secondary" size="small" onClick={() => handleEventResponse(false)}>
+                                No
+                            </Button>
+                        </React.Fragment>
+                    }
+                />
             </div>
-
-            <Box sx={{ mb: 10 }} />
-
-            <Snackbar
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'center',
-                }}
-                open={openSnackbar}
-                autoHideDuration={null}
-                onClose={handleSnackbarClose}
-                message={`Did you complete the task: ${currentFinishedEvent?.title}?`}
-                action={
-                    <React.Fragment>
-                        <Button color="primary" size="small" onClick={handleEventCompleted}>
-                            Yes
-                        </Button>
-                        <Button color="secondary" size="small" onClick={handleEventNotCompleted}>
-                            No
-                        </Button>
-                    </React.Fragment>
-                }
-            />
         </div>
     );
 }

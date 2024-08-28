@@ -77,13 +77,13 @@ function AppContent() {
     palette: {
       mode: 'light',
       primary: {
-        main: '#3f51b5',
+        main: '#6EACDA',
         light: '#757de8',
         dark: '#002984',
         contrastText: '#ffffff',
       },
       secondary: {
-        main: '#3f51b5',
+        main: '#6EACDA',
         light: '#757de8',
         dark: '#002984',
         contrastText: '#ffffff',

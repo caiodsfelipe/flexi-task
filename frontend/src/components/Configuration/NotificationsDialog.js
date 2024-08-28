@@ -7,19 +7,35 @@ import Button from '@mui/material/Button';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
 
 const NotificationsDialog = ({ open, onClose, notifications }) => {
     return (
-        <Dialog open={open} onClose={onClose}>
+        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
             <DialogTitle>Notifications</DialogTitle>
             <DialogContent>
                 <List>
                     {notifications.filter(Boolean).length > 0 ? (
                         notifications.filter(Boolean).map((notification, index) => (
-                            <ListItem key={index}>
+                            <ListItem key={index} divider>
                                 <ListItemText 
-                                    primary={notification.title || 'No Title'}
-                                    secondary={notification.message || 'No Message'}
+                                    primary={
+                                        <Typography variant="subtitle1" color="primary">
+                                            {notification.title || 'No Title'}
+                                        </Typography>
+                                    }
+                                    secondary={
+                                        <>
+                                            <Typography variant="body2" color="textSecondary">
+                                                {notification.message || 'No Message'}
+                                            </Typography>
+                                            {notification.start && (
+                                                <Typography variant="caption" color="textSecondary">
+                                                    Start: {new Date(notification.start).toLocaleString()}
+                                                </Typography>
+                                            )}
+                                        </>
+                                    }
                                 />
                             </ListItem>
                         ))
@@ -31,7 +47,7 @@ const NotificationsDialog = ({ open, onClose, notifications }) => {
                 </List>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose}>Close</Button>
+                <Button onClick={onClose} color="primary">Close</Button>
             </DialogActions>
         </Dialog>
     );
