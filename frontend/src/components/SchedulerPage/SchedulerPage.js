@@ -306,15 +306,16 @@ const SchedulerPage = () => {
 
     return (
         <div className="scheduler">
+
             <Box sx={{ flexGrow: 1 }}>
                 <Toolbar>
-                    <Typography variant="h5" component="div" sx={{ flexGrow: 1 }}>
-                        Your Schedule
+                    <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
+                    Have a nice day!
                     </Typography>
                 </Toolbar>
             </Box>
 
-            <Box sx={{ mt: 1 }} />
+            <Box sx={{ mt: 2 }} />
 
             <div className='scheduler-container'>
                 <div className='schedule'>
