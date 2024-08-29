@@ -1,14 +1,21 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useContext } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { AuthContext } from '../../contexts/AuthContext';
 import './HomePage.css';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
+import Button from '@mui/material/Button';
 
 const HomePage = () => {
     const navigate = useNavigate();
+    const { isAuthenticated } = useContext(AuthContext);
 
     useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/scheduler');
+        }
+
         const script = document.createElement('script');
         script.src = 'https://js.stripe.com/v3/buy-button.js';
         script.async = true;
@@ -29,7 +36,7 @@ const HomePage = () => {
             document.body.removeChild(script);
             window.removeEventListener('message', handleMessage);
         };
-    }, [navigate]);
+    }, [navigate, isAuthenticated]);
 
     return (
         <div className="home-container">
@@ -52,6 +59,16 @@ const HomePage = () => {
                             buy-button-id="buy_btn_1PsspwBAIWiwRgzWmZbQlZzf"
                             publishable-key="pk_test_xALdQa86qg5mkwxVhIppiotu00c4JLTRY3"
                         />
+                        <Box sx={{ mt: 2 }}>
+                            <Button
+                                component={Link}
+                                to="/login"
+                                variant="outlined"
+                                color="primary"
+                            >
+                                Already have an account? Log in
+                            </Button>
+                        </Box>
                     </Box>
                 </Box>
             </Container>
