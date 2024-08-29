@@ -55,7 +55,7 @@
 }
 
 .scheduler-container .rs__cell {
-    padding: 5px;
+    padding: 0.
 }
 
 @media (max-width: 768px) {
@@ -65,9 +65,5 @@
 
     .scheduler-container .rs__header_cell {
         font-size: 12px;
-    }
-
-    .scheduler-container .rs__cell {
-        padding: 3px;
     }
 }

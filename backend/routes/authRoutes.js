@@ -4,22 +4,38 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const auth = require('../middleware/auth');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
+// Store registration codes temporarily (in production, use a database)
+const registrationCodes = new Map();
 
 router.post('/register', async (req, res) => {
   try {
-    const { username, email, password } = req.body;
-    const user = new User({ username, email, password });
+    const { username, email, password, sessionId } = req.body;
+
+    // Verify the session and get subscription information
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    if (!session || session.payment_status !== 'paid') {
+      return res.status(400).send({ error: 'Invalid or unpaid session' });
+    }
+
+    const subscriptionId = session.subscription;
+    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+
+    const user = new User({
+      username,
+      email,
+      password,
+      subscriptionId,
+      subscriptionStatus: subscription.status
+    });
     await user.save();
+
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
     res.status(201).send({ user, token });
   } catch (error) {
     console.error('Registration error:', error);
-    if (error.code === 11000) {
-      // Duplicate key error
-      res.status(400).send({ error: 'Email or username already exists' });
-    } else {
-      res.status(400).send({ error: error.message });
-    }
+    res.status(400).send({ error: error.message });
   }
 });
 
@@ -34,7 +50,13 @@ router.post('/login', async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
-    console.log('User ID at login:', user._id); // Add this line
+
+    // Check if the user has an active subscription
+    const subscription = await stripe.subscriptions.retrieve(user.subscriptionId);
+    if (subscription.status !== 'active') {
+      return res.status(403).json({ message: 'Subscription inactive' });
+    }
+
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
     res.json({
       token,
@@ -42,7 +64,6 @@ router.post('/login', async (req, res) => {
         _id: user._id,
         username: user.username,
         email: user.email
-        // Add any other user fields you want to send
       }
     });
   } catch (error) {

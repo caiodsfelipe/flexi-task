@@ -14,12 +14,9 @@ import { subscribeToPushNotifications, unsubscribeFromPushNotifications } from '
 const SettingsDialog = ({ open, onClose }) => {
     const [enableNotifications, setEnableNotifications] = useState(false);
     const [showPermissionRequest, setShowPermissionRequest] = useState(false);
-    const [darkMode, setDarkMode] = useState(false);
 
     useEffect(() => {
         checkNotificationPermission();
-        const savedDarkMode = localStorage.getItem('darkMode') === 'true';
-        setDarkMode(savedDarkMode);
     }, []);
 
     const checkNotificationPermission = async () => {
@@ -47,15 +44,8 @@ const SettingsDialog = ({ open, onClose }) => {
         }
     };
 
-    const handleDarkModeToggle = () => {
-        const newDarkMode = !darkMode;
-        setDarkMode(newDarkMode);
-        localStorage.setItem('darkMode', newDarkMode);
-        document.body.classList.toggle('dark-mode', newDarkMode);
-    };
-
     const handleSave = () => {
-        console.log('Saving settings:', { enableNotifications, darkMode });
+        console.log('Saving settings:', { enableNotifications });
         onClose();
     };
 
@@ -73,17 +63,6 @@ const SettingsDialog = ({ open, onClose }) => {
                                 />
                             }
                             label="Enable Notifications"
-                        />
-                    </FormControl>
-                    <FormControl fullWidth margin="normal">
-                        <FormControlLabel
-                            control={
-                                <Switch
-                                    checked={darkMode}
-                                    onChange={handleDarkModeToggle}
-                                />
-                            }
-                            label="Dark Mode"
                         />
                     </FormControl>
                 </DialogContent>

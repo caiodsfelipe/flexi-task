@@ -33,7 +33,7 @@ const SchedulerPage = () => {
     // Handle submitting an event (create or update)
     const handleConfirm = useCallback((event, action) => {
         console.log('Confirmed event:', event, 'Action:', action);
-        const { event_id, id, title, start, end, priority, notificationTime, ...otherFields } = event;
+        const { event_id, id, title, start, end, priority, notificationTime, allDay, ...otherFields } = event;
         const apiCall = action === 'edit' ? memoizedUpdateTask : memoizedCreateTask;
 
         const startDate = new Date(start);
@@ -74,7 +74,8 @@ const SchedulerPage = () => {
             color: event.checked ? '#6EACDA' : color, // Preserve blue color for checked events
             textColor: event.checked ? '#FFFFFF' : textColor,
             notificationTime: parseInt(notificationTime, 10),
-            checked: event.checked || false
+            checked: event.checked || false,
+            allDay
         };
 
         console.log('Event to submit:', eventToSubmit);
@@ -328,6 +329,8 @@ const SchedulerPage = () => {
     return (
         <div className="scheduler">
             <div>
+                <Box sx={{ mt: { xs: 1, sm: 2, md: 3, lg: 3 } }} />
+
                 <Box sx={{ flexGrow: 1 }}>
                     <Toolbar>
                         <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
@@ -336,7 +339,7 @@ const SchedulerPage = () => {
                     </Toolbar>
                 </Box>
 
-                <Box sx={{ mt: 2 }} />
+                <Box sx={{ mt: 3 }} />
 
                 <div className='scheduler-container'>
                     <div className='schedule'>
@@ -356,13 +359,37 @@ const SchedulerPage = () => {
                                 editable={true}
                                 deletable={true}
                                 resizable={true}
+                                month={{ 
+                                    weekDays: [0, 1, 2, 3, 4, 5], 
+                                    weekStartOn: 6, 
+                                    startHour: 1, 
+                                    endHour: 26,
+                                    navigation: true,
+                                    disableGoToDay: false
+                                }}
+                                week={{ 
+                                    weekDays: [0, 1, 2, 3, 4, 5], 
+                                    weekStartOn: 6, 
+                                    startHour: 1, 
+                                    endHour: 26,
+                                    step: 120,
+                                    navigation: true,
+                                    disableGoToDay: false
+                                }}
+                                day={{
+                                    startHour: 1, 
+                                    endHour: 26,
+                                    step: 120,
+                                    navigation: true
+                                }}
                                 fields={[
-                                    { name: "title", type: "input", config: { label: "Title", required: true } },
-                                    { name: "start", type: "date", config: { label: "Start Date", required: true } },
-                                    { name: "end", type: "date", config: { label: "End Date", required: true } },
-                                    { name: "priority", type: "select", config: { label: "Priority", options: priorityOptions, required: true } },
+                                    { name: "title", type: "input", config: { label: "What do you need to do?", required: true } },
+                                    { name: "start", type: "date", config: { label: "When do you need to do it?", required: true } },
+                                    { name: "end", type: "date", config: { label: "When will you finish it?", required: true } },
+                                    { name: "allDay", type: "select", config: { label: "Is this an all-day event?", options: [{ value: true, text: "Yes" }, { value: false, text: "No" }] } },
+                                    { name: "priority", type: "select", config: { label: "How important is this task?", options: priorityOptions, required: true } },
                                     { name: "notificationTime", type: "select", config: { 
-                                        label: "Notification Time", 
+                                        label: "How long before do you want to be notified?", 
                                         options: [
                                             { value: 5, text: "5 minutes before" },
                                             { value: 10, text: "10 minutes before" },

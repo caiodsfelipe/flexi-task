@@ -1,30 +1,21 @@
 :root {
     /* Light mode colors */
     --primary-color: #6EACDA;
-    --primary-light: #757de8;
-    --primary-dark: #002984;
+    --primary-dark: #03346E;
+
     --background-color: #fff;
     --paper-color: #ffffff;
+
     --text-primary: #212121;
     --text-secondary: #757575;
-    --button-text-color: #ffffff;
 
-    /* Dark mode colors */
-    --dark-primary-color: #7986cb;
-    --dark-primary-light: #aab6fe;
-    --dark-primary-dark: #49599a;
-    --dark-background-color: #121212;
-    --dark-paper-color: #1e1e1e;
-    --dark-text-primary: #ffffff;
-    --dark-text-secondary: #b0bec5;
+    --button-primary-text-color: #ffffff;
+    --button-secondary-text-color: #1e1e1e;
 
     /* Navigation background colors */
-    --nav-background-color: #fff;
-    --nav-text-color: #1e1e1e;
-    --dark-nav-background-color: #1e1e1e;
-    --dark-nav-text-color: #fff;
-
-    --dark-button-text-color: #ffffff;
+    --nav-background-color: #ffffff;
+    --nav-text-color: #212121;
+    --nav-border-color: #f3f3f3;
 
     /* Button background colors */
     --button-primary-bg: #1e1e1e;
@@ -33,32 +24,6 @@
     --button-secondary-bg-hover: #f0f0f0;
     --button-primary-text-color: #ffffff;
     --button-secondary-text-color: #1e1e1e;
-
-    /* Dark mode button colors */
-    --dark-button-primary-bg: #7986cb;
-    --dark-button-primary-bg-hover: #5c6bc0;
-    --dark-button-secondary-bg: #49599a;
-    --dark-button-secondary-bg-hover: #6EACDA;
-}
-
-[data-theme="dark"] {
-    --primary-color: #7986cb;
-    --primary-light: #aab6fe;
-    --primary-dark: #49599a;
-    --background-color: #121212;
-    --paper-color: #1e1e1e;
-    --text-primary: #ffffff;
-    --text-secondary: #b0bec5;
-
-    --nav-background-color: var(--dark-nav-background-color);
-    --nav-text-color: var(--dark-nav-text-color);
-
-    --button-text-color: var(--dark-button-text-color);
-
-    --button-primary-bg: var(--dark-button-primary-bg);
-    --button-primary-bg-hover: var(--dark-button-primary-bg-hover);
-    --button-secondary-bg: var(--dark-button-secondary-bg);
-    --button-secondary-bg-hover: var(--dark-button-secondary-bg-hover);
 }
 
 body {
@@ -66,43 +31,20 @@ body {
     color: var(--text-primary);
 }
 
-/* Dark mode styles */
-body.dark-mode {
-    background-color: var(--dark-background-color)!important;
-    color: var(--dark-text-primary)!important;
-}
-
-/* Add any other global styles here */
-
-/* Example usage of colors */
 .primary-button {
     background-color: var(--primary-color) !important;
     color: var(--paper-color) !important;
-}
-
-.dark-mode .primary-button {
-    background-color: var(--dark-primary-color)!important;
-    color: var(--dark-paper-color)!important;
 }
 
 .secondary-text {
     color: var(--text-secondary) !important;
 }
 
-.dark-mode .secondary-text {
-    color: var(--dark-text-secondary)!important;
-}
-
 /* Add new class for bottom navigation */
 .bottom-nav {
     background-color: var(--nav-background-color) !important;
     color: var(--nav-text-color) !important; /* Add this line */
-}
-
-/* Add this for dark mode */
-body.dark-mode .bottom-nav {
-    background-color: var(--dark-nav-background-color) !important;
-    color: var(--dark-nav-text-color) !important; /* Add this line */
+    border-color: var(--nav-border-color) !important;
 }
 
 /* Add these new classes for the bottom navigation items */
@@ -110,50 +52,19 @@ body.dark-mode .bottom-nav {
     color: var(--nav-text-color) !important;
 }
 
-body.dark-mode .bottom-nav-item {
-    color: var(--dark-nav-text-color) !important;
-}
-
 /* You can add specific button styles here if needed */
 .MuiButton-root {
     font-weight: bold;
 }
 
-/* Dark mode button styles */
-body.dark-mode .MuiButton-containedPrimary {
-    background-color: var(--button-primary-bg) !important;
-    color: var(--button-primary-text-color) !important;
+/* Add this for the top navigation bar */
+.top-nav {
+    background-color: var(--nav-background-color) !important;
+    color: var(--nav-text-color) !important;
+    border-color: var(--nav-border-color) !important;
 }
 
-body.dark-mode .MuiButton-containedPrimary:hover {
-    background-color: var(--button-primary-bg-hover) !important;
-}
-
-body.dark-mode .MuiButton-containedSecondary {
-    background-color: var(--button-secondary-bg) !important;
-    color: var(--button-secondary-text-color) !important;
-}
-
-body.dark-mode .MuiButton-containedSecondary:hover {
-    background-color: var(--button-secondary-bg-hover) !important;
-}
-
-body.dark-mode .MuiButton-outlinedPrimary {
-    color: var(--dark-primary-color) !important;
-    border-color: var(--dark-primary-color) !important;
-}
-
-body.dark-mode .MuiButton-outlinedPrimary:hover {
-    background-color: var(--dark-primary-light) !important;
-    color: var(--dark-button-text-color) !important;
-}
-
-body.dark-mode .MuiButton-outlinedSecondary {
-    color: var(--dark-secondary-color) !important;
-    border-color: var(--dark-secondary-color) !important;
-}
-
-body.dark-mode .MuiButton-outlinedSecondary:hover {
-    background-color: var(--dark-secondary-light) !important;
-    color: var(--dark-button-text-color) !important;
+/* Add these new classes for the top navigation items */
+.top-nav-item {
+    color: var(--nav-text-color) !important;
 }

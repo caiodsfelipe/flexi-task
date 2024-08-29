@@ -17,6 +17,7 @@
     "express-sse": "^0.5.3",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.0.3",
-    "node-schedule": "^2.1.1"
+    "node-schedule": "^2.1.1",
+    "stripe": "^16.8.0"
   }
 }

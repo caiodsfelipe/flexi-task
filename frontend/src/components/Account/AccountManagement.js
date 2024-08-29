@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Container, Typography, TextField, Button, CircularProgress, Snackbar } from '@mui/material';
+import { Container, Typography, TextField, Button, CircularProgress, Snackbar, Divider } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import axios from 'axios';
 import { AuthContext } from '../../contexts/AuthContext';
@@ -54,17 +54,6 @@ const AccountManagement = () => {
     fetchUserData();
   }, [navigate, setIsAuthenticated]);
 
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://js.stripe.com/v3/buy-button.js';
-    script.async = true;
-    document.body.appendChild(script);
-
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, [navigate, setIsAuthenticated]);
-
   const handleInputChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
     setIsEdited(true);
@@ -103,6 +92,10 @@ const AccountManagement = () => {
     }
   };
 
+  const handleCancelSubscription = () => {
+    window.open('https://billing.stripe.com/p/login/test_8wM14R0Nl7l0eIMaEE', '_blank');
+  };
+
   const handleCloseSnackbar = (event, reason) => {
     if (reason === 'clickaway') {
       return;
@@ -121,12 +114,7 @@ const AccountManagement = () => {
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '70vh' }}>
       <Container maxWidth="sm">
         <Box sx={{ m: 4 }} />
-        <Typography variant="h4" gutterBottom>My Account</Typography>
-        <Typography variant="h6" gutterBottom>Upgrade Your Account</Typography>
-        <stripe-buy-button
-          buy-button-id="buy_btn_1PsspwBAIWiwRgzWmZbQlZzf"
-          publishable-key="pk_test_xALdQa86qg5mkwxVhIppiotu00c4JLTRY3"
-        />
+        <Typography variant="h4" gutterBottom>Your account</Typography>
         <TextField
           fullWidth
           label="Username"
@@ -162,6 +150,19 @@ const AccountManagement = () => {
           {isEdited ? 'Save Changes' : 'No Changes'}
         </Button>
         
+        <Box sx={{ my: 4 }}>
+          <Divider />
+        </Box>
+
+        <Typography variant="h5" gutterBottom>Subscription Management</Typography>
+        <Button 
+          variant="outlined" 
+          color="secondary" 
+          onClick={handleCancelSubscription}
+        >
+          Cancel Subscription
+        </Button>
+
         <Box sx={{ mb: 10 }} />
 
         <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
