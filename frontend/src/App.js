@@ -70,6 +70,8 @@ function AppContent() {
     };
   }, []);
 
+  const isHomePage = location.pathname === '/';
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -158,28 +160,30 @@ function AppContent() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <StyledAppBar position="sticky">
-        <StyledToolbar>
-          {location.pathname !== '/' && (
-            <IconButton
-              edge="start"
-              sx={{ color: 'var(--nav-text-color)' }}
-              onClick={() => navigate(-1)}
-              aria-label="back"
-            >
-              <ArrowBackIcon />
-            </IconButton>
-          )}
-          <AccessTimeIcon 
-            sx={{ 
-              fontSize: '30px', 
-              color: 'var(--nav-text-color)'
-            }} 
-          />
-          <div style={{ width: 48 }} /> {/* Spacer to balance the layout */}
-        </StyledToolbar>
-      </StyledAppBar>
-      <Box sx={{ paddingTop: '16px' }}> {/* Add padding to account for the sticky AppBar */}
+      {!isHomePage && (
+        <StyledAppBar position="sticky">
+          <StyledToolbar>
+            {location.pathname !== '/' && (
+              <IconButton
+                edge="start"
+                sx={{ color: 'var(--nav-text-color)' }}
+                onClick={() => navigate(-1)}
+                aria-label="back"
+              >
+                <ArrowBackIcon />
+              </IconButton>
+            )}
+            <AccessTimeIcon 
+              sx={{ 
+                fontSize: '30px', 
+                color: 'var(--nav-text-color)'
+              }} 
+            />
+            <div style={{ width: 48 }} /> {/* Spacer to balance the layout */}
+          </StyledToolbar>
+        </StyledAppBar>
+      )}
+      <Box sx={{ paddingTop: isHomePage ? 0 : '16px' }}> {/* Adjust padding based on whether it's the homepage */}
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/scheduler" element={<SchedulerPage />} />
@@ -196,11 +200,13 @@ function AppContent() {
           open={openSettings}
           onClose={() => setOpenSettings(false)}
         />
-        <NavigationBar 
-          unreadCount={unreadCount}
-          handleNotificationClick={handleNotificationClick}
-          setOpenSettings={setOpenSettings}
-        />
+        {!isHomePage && (
+          <NavigationBar 
+            unreadCount={unreadCount}
+            handleNotificationClick={handleNotificationClick}
+            setOpenSettings={setOpenSettings}
+          />
+        )}
       </Box>
     </ThemeProvider>
   );

@@ -9,9 +9,13 @@ const { scheduleAllNotifications } = require('./services/notificationService');
 const SSE = require('express-sse');
 const authRoutes = require('./routes/authRoutes');
 const pushSubscriptionRoutes = require('./routes/pushSubscriptionRoutes');
+const stripeRoutes = require('./routes/stripeRoutes'); // Add this line
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Important: This line should come before any other middleware that parses the body
+app.use('/webhook', express.raw({type: 'application/json'}));
 
 app.use(cors({
   origin: 'http://localhost:5001', // or your frontend URL
@@ -33,6 +37,9 @@ app.use('/api/auth', authRoutes);
 
 // Include push subscription routes
 app.use('/api/push-subscription', pushSubscriptionRoutes);
+
+// Use Stripe routes
+app.use('/', stripeRoutes); // This will make the webhook available at /webhook
 
 console.log('MONGODB_URI:', process.env.MONGODB_URI); // Keep this for debugging if needed
 
