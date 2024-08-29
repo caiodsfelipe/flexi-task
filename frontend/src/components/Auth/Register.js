@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { TextField, Button, Typography, Container } from '@mui/material';
+import { TextField, Button, Typography, Container, CircularProgress } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../../contexts/AuthContext';
@@ -9,31 +9,61 @@ const Register = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [registrationCode, setRegistrationCode] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
   const { setIsAuthenticated } = useContext(AuthContext);
 
   useEffect(() => {
-    // Extract the registration code from the URL
-    const params = new URLSearchParams(location.search);
-    const code = params.get('code');
-    if (code) {
-      setRegistrationCode(code);
-    }
+    const fetchSessionData = async () => {
+      const params = new URLSearchParams(location.search);
+      const sessionId = params.get('session_id');
+      console.log('Session ID from URL:', sessionId);
+      if (sessionId) {
+        try {
+          console.log('Fetching session data...');
+          const response = await axios.get(`/api/session/${sessionId}`);
+          console.log('Session data received:', response.data);
+          setEmail(response.data.email);
+          setLoading(false);
+        } catch (error) {
+          console.error('Error fetching session data:', error);
+          setError('Failed to retrieve session data. Please try again.');
+          setLoading(false);
+        }
+      } else {
+        console.log('No session ID found in URL');
+        setError('No session ID provided. Please complete the checkout process.');
+        setLoading(false);
+      }
+    };
+
+    fetchSessionData();
   }, [location]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/api/auth/register', { username, email, password, registrationCode });
+      const params = new URLSearchParams(location.search);
+      const sessionId = params.get('session_id');
+      const response = await axios.post('/api/auth/register', { username, email, password, sessionId });
       localStorage.setItem('token', response.data.token);
       setIsAuthenticated(true);
-      navigate('/account');
+      navigate('/scheduler');
     } catch (error) {
       console.error('Registration failed:', error);
+      setError('Registration failed. Please try again.');
     }
   };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <Box
@@ -45,61 +75,49 @@ const Register = () => {
         minHeight: '70vh',
       }}
     >
-    <Container maxWidth="xs">
-      <Typography variant="h4" align="center" gutterBottom>
-        Register
-      </Typography>
-      <form onSubmit={handleSubmit}>
-        <TextField
-          label="Username"
-          fullWidth
-          margin="normal"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
-        <TextField
-          label="Email"
-          type="email"
-          fullWidth
-          margin="normal"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <TextField
-          label="Password"
-          type="password"
-          fullWidth
-          margin="normal"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <TextField
-          label="Registration Code"
-          fullWidth
-          margin="normal"
-          value={registrationCode}
-          onChange={(e) => setRegistrationCode(e.target.value)}
-          required
-          disabled // Make this field read-only
-        />
-        <Box sx={{ mt: 2 }} />
-        <Button type="submit" variant="contained" color="primary" fullWidth>
+      <Container maxWidth="xs">
+        <Typography variant="h4" align="center" gutterBottom>
           Register
-        </Button>
-        <Box sx={{ mt: 1 }} />
-        <Button
-          variant="contained"
-          color="secondary"
-          fullWidth
-          onClick={() => navigate('/login')}
-        >
-          Login
-        </Button>
-      </form>
-    </Container>
+        </Typography>
+        {error && (
+          <Typography color="error" align="center" gutterBottom>
+            {error}
+          </Typography>
+        )}
+        <form onSubmit={handleSubmit}>
+          <TextField
+            label="Username"
+            fullWidth
+            margin="normal"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+          <TextField
+            label="Email"
+            type="email"
+            fullWidth
+            margin="normal"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            disabled
+          />
+          <TextField
+            label="Password"
+            type="password"
+            fullWidth
+            margin="normal"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <Box sx={{ mt: 2 }} />
+          <Button type="submit" variant="contained" color="primary" fullWidth>
+            Register
+          </Button>
+        </form>
+      </Container>
     </Box>
   );
 };

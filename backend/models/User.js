@@ -11,7 +11,6 @@ const userSchema = new mongoose.Schema({
     enum: ['active', 'inactive', 'canceled', 'past_due'],
     default: 'inactive'
   },
-  registrationCode: { type: String },
   schedulePreferences: {
     lunchTime: Date,
     dinnerTime: Date,

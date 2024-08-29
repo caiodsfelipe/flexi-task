@@ -14,13 +14,12 @@ const HomePage = () => {
         script.async = true;
         document.body.appendChild(script);
 
-        // Listen for messages from Stripe
         const handleMessage = (event) => {
+            console.log('Received message:', event.data);
             if (event.data.type === 'stripe-buy-button:success') {
-                const { redirectUrl } = event.data;
-                if (redirectUrl) {
-                    navigate(redirectUrl);
-                }
+                const { sessionId } = event.data;
+                console.log('Redirecting with session ID:', sessionId);
+                navigate(`/register?session_id=${sessionId}`);
             }
         };
 

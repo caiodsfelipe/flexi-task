@@ -39,7 +39,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/push-subscription', pushSubscriptionRoutes);
 
 // Use Stripe routes
-app.use('/', stripeRoutes); // This will make the webhook available at /webhook
+app.use('/api', stripeRoutes); // This will make the webhook available at /webhook
 
 console.log('MONGODB_URI:', process.env.MONGODB_URI); // Keep this for debugging if needed
 

@@ -11,19 +11,25 @@ const registrationCodes = new Map();
 
 router.post('/register', async (req, res) => {
   try {
-    const { username, email, password, registrationCode } = req.body;
+    const { username, email, password, sessionId } = req.body;
 
-    // Verify the registration code
-    const registrationData = registrationCodes.get(registrationCode);
-    if (!registrationData || registrationData.email !== email) {
-      return res.status(400).send({ error: 'Invalid registration code' });
+    // Verify the session and get subscription information
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    if (!session || session.payment_status !== 'paid') {
+      return res.status(400).send({ error: 'Invalid or unpaid session' });
     }
 
-    const user = new User({ username, email, password, subscriptionId: registrationData.subscriptionId });
-    await user.save();
+    const subscriptionId = session.subscription;
+    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
 
-    // Remove the used registration code
-    registrationCodes.delete(registrationCode);
+    const user = new User({
+      username,
+      email,
+      password,
+      subscriptionId,
+      subscriptionStatus: subscription.status
+    });
+    await user.save();
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
     res.status(201).send({ user, token });
