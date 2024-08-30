@@ -19,6 +19,7 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import IconButton from '@mui/material/IconButton';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { styled } from '@mui/material/styles';
+import { useEffect } from 'react';
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   backgroundColor: 'var(--nav-background-color)',
@@ -54,12 +55,17 @@ const ProtectedRoute = ({ children }) => {
 };
 
 function AppContent() {
-  const { loading, user } = useAuth();
-  const [setOpenSettings] = useState(false);
+  const { loading, user, isAuthenticated } = useAuth();
+  const [openSettings, setOpenSettings] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
   const isHomePage = location.pathname === '/';
+
+  // Add this effect to force a re-render when the auth state changes
+  useEffect(() => {
+    // This empty dependency array ensures the effect runs only once when the component mounts
+  }, [isAuthenticated]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -148,7 +154,7 @@ function AppContent() {
           </StyledToolbar>
         </StyledAppBar>
       )}
-      <Box sx={{ paddingTop: isHomePage ? 0 : '16px' }}>
+      <Box sx={{ paddingTop: isHomePage ? 0 : '16px', paddingBottom: '56px' }}>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<Login />} />
@@ -177,7 +183,7 @@ function AppContent() {
             }
           />
         </Routes>
-        {!isHomePage && user && (
+        {!isHomePage && isAuthenticated && (
           <NavigationBar 
             setOpenSettings={setOpenSettings}
           />
