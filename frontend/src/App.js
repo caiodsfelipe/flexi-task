@@ -20,7 +20,7 @@ import IconButton from '@mui/material/IconButton';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { styled } from '@mui/material/styles';
 import { useEffect } from 'react';
-
+import PaymentGateway from './components/Auth/PaymentGateway';
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   backgroundColor: 'var(--nav-background-color)',
   color: 'var(--nav-text-color)',
@@ -39,8 +39,8 @@ const StyledIconButton = styled(IconButton)(({ theme }) => ({
   },
 }));
 
-const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
+const ProtectedRoute = ({ children, path }) => {
+  const { isAuthenticated, loading, user } = useAuth();
   const location = useLocation();
 
   if (loading) {
@@ -51,12 +51,16 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
+  if (user.paymentStatus !== 'paid' && path === '/scheduler') {
+    return <PaymentGateway />;
+  }
+
   return children;
 };
 
 function AppContent() {
-  const { loading, user, isAuthenticated } = useAuth();
-  const [openSettings, setOpenSettings] = useState(false);
+  const { loading, isAuthenticated } = useAuth();
+  const [setOpenSettings] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -162,7 +166,7 @@ function AppContent() {
           <Route
             path="/scheduler"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute path="/scheduler">
                 <SchedulerPage />
               </ProtectedRoute>
             }
@@ -170,7 +174,7 @@ function AppContent() {
           <Route
             path="/account"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute path="/account">
                 <AccountManagement />
               </ProtectedRoute>
             }

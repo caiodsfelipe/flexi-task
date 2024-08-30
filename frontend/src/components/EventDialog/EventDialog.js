@@ -86,7 +86,6 @@ const EventDialog = ({ open, onClose, onSubmit, currentEvent, priorityOptions })
             updatedEvent.start = startDate.toISOString();
             updatedEvent.end = endDate.toISOString();
         } catch (error) {
-            console.error("Invalid date:", error);
             alert("Please enter valid start and end dates.");
             return;
         }
@@ -119,8 +118,6 @@ const EventDialog = ({ open, onClose, onSubmit, currentEvent, priorityOptions })
     };
 
     if (!open) return null;
-
-    console.log('EventDialog event:', event);
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>

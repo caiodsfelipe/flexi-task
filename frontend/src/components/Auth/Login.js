@@ -8,6 +8,7 @@ import { Box } from '@mui/material';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
   const { isAuthenticated, setIsAuthenticated, setUser } = useContext(AuthContext);
 
@@ -15,26 +16,26 @@ const Login = () => {
     if (isAuthenticated) {
       navigate('/scheduler');
     }
-  }, [isAuthenticated]); // Remove navigate from the dependency array
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(''); // Clear any previous errors
     try {
       const response = await axios.post('/api/auth/login', { email, password });
-      console.log('Login response:', response.data);
+
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
         setUser(response.data.user);
         setIsAuthenticated(true);
-        // Remove the navigate call from here
       } else {
-        console.error('No token received from login');
+        setError('Login failed: No token received');
       }
     } catch (error) {
-      console.error('Login failed:', error);
       if (error.response) {
-        console.error('Error response:', error.response.data);
-        console.error('Error status:', error.response.status);
+        setError(error.response.data.message || 'Login failed. Please try again.');
+      } else {
+        setError('An error occurred. Please try again.');
       }
     }
   };
@@ -53,6 +54,11 @@ const Login = () => {
         <Typography variant="h4" align="center" gutterBottom>
           Login
         </Typography>
+        {error && (
+          <Typography color="error" align="center" sx={{ mt: 2 }} gutterBottom>
+            {error}
+          </Typography>
+        )}
         <form onSubmit={handleSubmit}>
           <TextField
             label="Email"
@@ -83,7 +89,7 @@ const Login = () => {
             fullWidth
             onClick={() => navigate('/register')}
           >
-            Register
+            Don't have an account? Register
           </Button>
         </form>
       </Container>

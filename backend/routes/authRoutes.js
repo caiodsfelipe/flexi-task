@@ -4,37 +4,22 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const auth = require('../middleware/auth');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-
-// Store registration codes temporarily (in production, use a database)
-const registrationCodes = new Map();
 
 router.post('/register', async (req, res) => {
   try {
-    const { username, email, password, sessionId } = req.body;
-
-    // Verify the session and get subscription information
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
-    if (!session || session.payment_status !== 'paid') {
-      return res.status(400).send({ error: 'Invalid or unpaid session' });
-    }
-
-    const subscriptionId = session.subscription;
-    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+    const { username, email, password } = req.body;
 
     const user = new User({
       username,
       email,
       password,
-      subscriptionId,
-      subscriptionStatus: subscription.status
+      paymentStatus: 'unpaid'
     });
     await user.save();
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
     res.status(201).send({ user, token });
   } catch (error) {
-    console.error('Registration error:', error);
     res.status(400).send({ error: error.message });
   }
 });
@@ -51,36 +36,26 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    // Check if the user has an active subscription
-    const subscription = await stripe.subscriptions.retrieve(user.subscriptionId);
-    if (subscription.status !== 'active') {
-      return res.status(403).json({ message: 'Subscription inactive' });
-    }
-
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
     res.json({
       token,
       user: {
         _id: user._id,
         username: user.username,
-        email: user.email
+        email: user.email,
+        paymentStatus: user.paymentStatus
       }
     });
   } catch (error) {
-    console.error('Login error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
 
 router.get('/me', auth, async (req, res) => {
-  // This route will be protected and will return the current user's data
-  console.log('User from request:', req.user);
   res.send(req.user);
 });
 
 router.patch('/me', auth, async (req, res) => {
-  console.log('Received update request with body:', req.body);
-  console.log('User from request:', req.user);
 
   if (!req.user) {
     return res.status(401).json({ message: 'User not authenticated' });
@@ -89,9 +64,6 @@ router.patch('/me', auth, async (req, res) => {
   const updates = Object.keys(req.body);
   const allowedUpdates = ['username', 'email', 'password', 'schedulePreferences'];
   const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
-
-  console.log('Updates:', updates);
-  console.log('Is valid operation:', isValidOperation);
 
   if (!isValidOperation) {
     return res.status(400).send({ error: 'Invalid updates!' });
@@ -102,7 +74,6 @@ router.patch('/me', auth, async (req, res) => {
     await req.user.save();
     res.send(req.user);
   } catch (error) {
-    console.error('Error saving user:', error);
     res.status(400).send(error);
   }
 });
@@ -115,7 +86,20 @@ router.get('/user/profile', auth, async (req, res) => {
     }
     res.json(user);
   } catch (error) {
-    console.error('Error fetching user profile:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+router.post('/confirm-payment', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    user.paymentStatus = 'paid';
+    await user.save();
+    res.json({ message: 'Payment confirmed', paymentStatus: 'paid' });
+  } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }
 });

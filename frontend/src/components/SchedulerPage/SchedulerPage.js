@@ -12,7 +12,6 @@ import { useAuth } from '../../contexts/AuthContext';
 
 const SchedulerPage = () => {
     const { user, loading } = useAuth();
-    console.log('Current user:', user);
 
     const [events, setEvents] = useState([]);
     const [updateKey, setUpdateKey] = useState(0);
@@ -32,7 +31,6 @@ const SchedulerPage = () => {
 
     // Handle submitting an event (create or update)
     const handleConfirm = useCallback((event, action) => {
-        console.log('Confirmed event:', event, 'Action:', action);
         const { event_id, id, title, start, end, priority, allDay, ...otherFields } = event;
         const isAllDay = allDay === '1' || allDay === true;
         const apiCall = action === 'edit' ? memoizedUpdateTask : memoizedCreateTask;
@@ -41,7 +39,6 @@ const SchedulerPage = () => {
         const endDate = new Date(end);
 
         if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-            console.error("Invalid date detected:", { start, end });
             return Promise.reject("Invalid date detected. Please try again.");
         }
 
@@ -78,11 +75,9 @@ const SchedulerPage = () => {
             allDay: isAllDay
         };
 
-        console.log('Event to submit:', eventToSubmit);
-
         return apiCall(action === 'edit' ? eventToSubmit.id : null, eventToSubmit)
             .then(response => {
-                console.log('Response from API after submit:', response);
+
                 const processedEvent = {
                     ...response.data,
                     event_id: response.data.id.toString(),
@@ -92,7 +87,7 @@ const SchedulerPage = () => {
                     editable: true,
                     deletable: true,
                 };
-                console.log('Processed event:', processedEvent);
+
                 setEvents(prevEvents => {
                     const updatedEvents = action === 'edit'
                         ? prevEvents.map(e => e.id === processedEvent.id ? processedEvent : e)
@@ -102,21 +97,19 @@ const SchedulerPage = () => {
                 return processedEvent;
             })
             .catch(error => {
-                console.error('Error processing event:', error);
                 throw error;
             });
     }, [memoizedCreateTask, memoizedUpdateTask]);
 
     // Update the handleDelete function
     const handleDelete = useCallback((deletedId) => {
-        console.log('Deleting event:', deletedId);
+
         deleteTask(deletedId)
             .then((response) => {
-                console.log('Response from server after deletion:', response);
+
                 // Check if response and response.data exist
                 if (response.length > 0) {
                     const updatedTasks = response;
-                    console.log('Updated tasks from server:', updatedTasks);
                     
                     // Update the events state with the new list from the server
                     setEvents(updatedTasks.map(task => ({
@@ -127,7 +120,6 @@ const SchedulerPage = () => {
                     })));
                 } else {
                     // If no tasks are returned, set events to an empty array
-                    console.log('No tasks returned from server after deletion');
                     setEvents([]);
                 }
                 
@@ -135,7 +127,6 @@ const SchedulerPage = () => {
                 setUpdateKey(prevKey => prevKey + 1);
             })
             .catch(error => {
-                console.error('Error deleting event:', error);
                 // Optionally, show an error message to the user
             });
     }, []);
@@ -144,7 +135,6 @@ const SchedulerPage = () => {
     useEffect(() => {
         getTasks()
             .then(response => {
-                console.log('Raw events from database:', response.data);
                 const processedEvents = response.data.map(event => ({
                     ...event,
                     event_id: event.id.toString(), // Add event_id for Scheduler
@@ -158,11 +148,10 @@ const SchedulerPage = () => {
                     textColor: event.textColor || '#ffffff',
                     checked: event.checked || false
                 }));
-                console.log('Processed events:', processedEvents);
+
                 const validEvents = validateEventDates(processedEvents);
                 setEvents(validEvents);
-            })
-            .catch(error => console.error('Error fetching events:', error));
+            });
     }, []);
 
     const priorityOptions = [
@@ -173,7 +162,6 @@ const SchedulerPage = () => {
 
     // Add this new function to handle event drops
     const handleEventDrop = useCallback((droppedEvent, updatedEvent, originalEvent) => {
-        console.log("Event drop attempted:", { droppedEvent, updatedEvent, originalEvent });
 
         return new Promise((resolve, reject) => {
             // Create an updated event object
@@ -187,7 +175,7 @@ const SchedulerPage = () => {
                 editable: true,
                 deletable: true
             };
-            console.log('Event to update:', eventToUpdate);
+
             memoizedUpdateTask(eventToUpdate.id, eventToUpdate)
                 .then(response => {
                     const processedEvent = {
@@ -213,7 +201,6 @@ const SchedulerPage = () => {
                     resolve(processedEvent);
                 })
                 .catch(error => {
-                    console.error('Error updating dropped event:', error);
                     reject(error);
                 });
         });
@@ -223,14 +210,10 @@ const SchedulerPage = () => {
     useEffect(() => {
         const scheduler = document.querySelector('.rs__scheduler');
         if (scheduler) {
-            scheduler.addEventListener('dragstart', () => console.log('Drag started'));
-            scheduler.addEventListener('dragend', () => console.log('Drag ended'));
+            scheduler.addEventListener('dragstart');
+            scheduler.addEventListener('dragend');
         }
     }, []);
-
-    useEffect(() => {
-        console.log('Current events:', events);
-    }, [events]);
 
     // Modify this function to check for finished events
     const checkFinishedEvents = useCallback(() => {
@@ -307,7 +290,7 @@ const SchedulerPage = () => {
 
             updateTask(currentFinishedEvent.id, updatedEvent)
                 .then(response => {
-                    console.log('Event updated:', response.data);
+
                     setEvents(prevEvents => prevEvents.map(event => 
                         event.id === updatedEvent.id ? updatedEvent : event
                     ));
@@ -317,7 +300,7 @@ const SchedulerPage = () => {
                     }
                 })
                 .catch(error => {
-                    console.error('Error updating event in database:', error);
+                    //
                 });
         }
     }, [currentFinishedEvent, updateTask, rescheduleEvent]);

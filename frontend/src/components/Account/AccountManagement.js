@@ -38,12 +38,10 @@ const AccountManagement = () => {
         });
         setLoading(false);
       } catch (err) {
-        console.error('Error fetching user data:', err);
         if (err.response && err.response.status === 401) {
-          console.log('Unauthorized access. Redirecting to login page.');
-          localStorage.removeItem('token'); // Clear the invalid token
-          setIsAuthenticated(false); // Update auth context
-          navigate('/login'); // Redirect to login page
+          localStorage.removeItem('token');
+          setIsAuthenticated(false);
+          navigate('/login');
         } else {
           setError('Failed to load user data. Please try again.');
         }
@@ -63,37 +61,31 @@ const AccountManagement = () => {
     try {
       const updatedUser = {
         username: user.username,
-        email: user.email
+        email: user.email,
+        password: user.password // Include password in the update
       };
-      console.log('Sending update request with data:', updatedUser);
+
       const response = await axios.patch('/api/auth/me', updatedUser, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       });
-      console.log('Server response:', response);
-      setUser(response.data);
-      setIsEdited(false);
-      setOpenSnackbar(true); // Show success toast
 
-      // Update local storage with new user data
-      localStorage.setItem('user', JSON.stringify(response.data));
+      setUser({
+        ...response.data,
+        password: '' // Clear the password field after successful update
+      });
+      setIsEdited(false);
+      setOpenSnackbar(true);
+
+      // Update local storage with new user data (excluding password)
+      const { password, ...userDataForStorage } = response.data;
+      localStorage.setItem('user', JSON.stringify(userDataForStorage));
       
-      // Refresh the auth context
       setIsAuthenticated(true);
     } catch (error) {
-      console.error('Error updating user data:', error);
-      if (error.response) {
-        console.error('Response data:', error.response.data);
-        console.error('Response status:', error.response.status);
-        console.error('Response headers:', error.response.headers);
-      }
       setError('Failed to update user data. Please try again.');
     }
-  };
-
-  const handleCancelSubscription = () => {
-    window.open('https://billing.stripe.com/p/login/test_8wM14R0Nl7l0eIMaEE', '_blank');
   };
 
   const handleCloseSnackbar = (event, reason) => {
@@ -123,7 +115,7 @@ const AccountManagement = () => {
         <Typography variant="h4" gutterBottom>Your account</Typography>
         <TextField
           fullWidth
-          label="Username"
+          label="First Name"
           name="username"
           value={user.username}
           margin="normal"
@@ -139,51 +131,51 @@ const AccountManagement = () => {
         />
         <TextField
           fullWidth
-          label="Password"
+          label="New Password"
           name="password"
           type="password"
-          value={user.password || ''} // Ensure value is always a string
+          value={user.password || ''}
           margin="normal"
           onChange={handleInputChange}
+          helperText="Leave blank to keep current password"
         />
         <Box sx={{ m: 2 }} />
-        <Button 
-          variant="contained" 
-          color="primary" 
-          onClick={handleSaveChanges}
-          disabled={!isEdited}
-        >
-          {isEdited ? 'Save Changes' : 'No Changes'}
-        </Button>
+        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            onClick={handleSaveChanges}
+            disabled={!isEdited}
+          >
+            {isEdited ? 'Save Changes' : 'No Changes'}
+          </Button>
+        </Box>
         
         <Box sx={{ my: 4 }}>
           <Divider />
         </Box>
 
-        <Typography variant="h5" gutterBottom>Subscription Management</Typography>
-        <Button 
-          variant="contained"
-          color="secondary"
-          onClick={handleCancelSubscription}
-        >
-          Cancel Subscription
-        </Button>
-
-        <Box sx={{ my: 4 }}>
-          <Divider />
+        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Button 
+            variant="contained" 
+            color="error" 
+            onClick={handleLogout}
+          >
+            Logout
+          </Button>
         </Box>
-
-        <Button 
-          variant="contained" 
-          color="error" 
-          onClick={handleLogout}
-        >
-          Logout
-        </Button>
 
         <Box sx={{ mb: 10 }} />
 
-        <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+        <Snackbar 
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
+          }}
+          open={openSnackbar} 
+          autoHideDuration={null} 
+          onClose={handleCloseSnackbar}
+        >
           <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%' }}>
             Account updated successfully!
           </Alert>

@@ -35,23 +35,16 @@ app.use('/api', stripeRoutes); // This will make the webhook available at /webho
 // Use Stripe routes
 app.use('/', stripeRoutes); // This will make the webhook available at /webhook
 
-console.log('MONGODB_URI:', process.env.MONGODB_URI); // Keep this for debugging if needed
-
 if (!process.env.MONGODB_URI) {
-  console.error('MONGODB_URI is not defined in environment variables');
   process.exit(1);
 }
 
 const sse = new SSE();
 
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => {
-    console.log('Connected to MongoDB');
-  })
-  .catch((error) => console.error('Error connecting to MongoDB:', error));
+mongoose.connect(process.env.MONGODB_URI);
 
 app.get('/', (req, res) => {
   res.send('Flexible Scheduler API is running');
 });
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT);

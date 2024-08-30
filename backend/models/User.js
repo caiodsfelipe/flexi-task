@@ -5,11 +5,10 @@ const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  subscriptionId: { type: String },
-  subscriptionStatus: { 
+  paymentStatus: { 
     type: String, 
-    enum: ['active', 'inactive', 'canceled', 'past_due'],
-    default: 'inactive'
+    enum: ['paid', 'unpaid'],
+    default: 'unpaid'
   },
   schedulePreferences: {
     lunchTime: Date,

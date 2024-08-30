@@ -20,7 +20,6 @@ module.exports = async function(req, res, next) {
     req.user = user;
     next();
   } catch (err) {
-    console.error('Auth middleware error:', err);
     res.status(401).json({ message: 'Token is not valid' });
   }
 };
