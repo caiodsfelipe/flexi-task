@@ -103,6 +103,12 @@ const AccountManagement = () => {
     setOpenSnackbar(false);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setIsAuthenticated(false);
+    navigate('/login');
+  };
 
   if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '90vh' }}><CircularProgress /></Box>;
   if (error) return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '90vh' }}><Typography color="error">{error}</Typography></Box>;
@@ -156,11 +162,23 @@ const AccountManagement = () => {
 
         <Typography variant="h5" gutterBottom>Subscription Management</Typography>
         <Button 
-          variant="outlined" 
-          color="secondary" 
+          variant="contained"
+          color="secondary"
           onClick={handleCancelSubscription}
         >
           Cancel Subscription
+        </Button>
+
+        <Box sx={{ my: 4 }}>
+          <Divider />
+        </Box>
+
+        <Button 
+          variant="contained" 
+          color="error" 
+          onClick={handleLogout}
+        >
+          Logout
         </Button>
 
         <Box sx={{ mb: 10 }} />

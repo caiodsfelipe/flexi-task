@@ -14,6 +14,7 @@ const Register = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { setIsAuthenticated } = useContext(AuthContext);
+  const [sessionId, setSessionId] = useState(null);
 
   useEffect(() => {
     const fetchSessionData = async () => {
@@ -26,6 +27,7 @@ const Register = () => {
           const response = await axios.get(`/api/session/${sessionId}`);
           console.log('Session data received:', response.data);
           setEmail(response.data.email);
+          setSessionId(sessionId);
           setLoading(false);
         } catch (error) {
           console.error('Error fetching session data:', error);
@@ -34,7 +36,7 @@ const Register = () => {
         }
       } else {
         console.log('No session ID found in URL');
-        setError('No session ID provided. Please complete the checkout process.');
+        setSessionId(null);
         setLoading(false);
       }
     };
@@ -84,39 +86,58 @@ const Register = () => {
             {error}
           </Typography>
         )}
-        <form onSubmit={handleSubmit}>
-          <TextField
-            label="Username"
-            fullWidth
-            margin="normal"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-          <TextField
-            label="Email"
-            type="email"
-            fullWidth
-            margin="normal"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            disabled
-          />
-          <TextField
-            label="Password"
-            type="password"
-            fullWidth
-            margin="normal"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <Box sx={{ mt: 2 }} />
-          <Button type="submit" variant="contained" color="primary" fullWidth>
-            Register
-          </Button>
-        </form>
+        {sessionId ? (
+          <form onSubmit={handleSubmit}>
+            <TextField
+              label="Username"
+              fullWidth
+              margin="normal"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+            <TextField
+              label="Email"
+              type="email"
+              fullWidth
+              margin="normal"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              disabled
+            />
+            <TextField
+              label="Password"
+              type="password"
+              fullWidth
+              margin="normal"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <Box sx={{ mt: 2 }} />
+            <Button 
+              type="submit" 
+              variant="contained" 
+              color="primary" 
+              fullWidth
+            >
+              Register
+            </Button>
+          </form>
+        ) : (
+          <Box sx={{ mt: 2, textAlign: 'center' }}>
+            <Typography variant="body1" gutterBottom>
+              Please complete the checkout process to register:
+            </Typography>
+            <Box sx={{ mt: 2 }}>
+              <stripe-buy-button
+                buy-button-id="buy_btn_1PsspwBAIWiwRgzWmZbQlZzf"
+                publishable-key="pk_test_xALdQa86qg5mkwxVhIppiotu00c4JLTRY3"
+              />
+            </Box>
+          </Box>
+        )}
       </Container>
     </Box>
   );

@@ -4,12 +4,14 @@ import { AuthContext } from '../../contexts/AuthContext';
 import Button from '@mui/material/Button';
 
 const Logout = () => {
-  const { setIsAuthenticated } = useContext(AuthContext);
+  const { setIsAuthenticated, setUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     setIsAuthenticated(false);
+    setUser(null);
     navigate('/');
   };
 

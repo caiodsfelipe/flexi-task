@@ -3,12 +3,9 @@ require('dotenv').config({ path: '.env' });
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const taskRoutes = require('./routes/taskRoutes'); // Update the path as necessary
-const notificationRoutes = require('./api/notifications');
-const { scheduleAllNotifications } = require('./services/notificationService');
+const taskRoutes = require('./routes/taskRoutes');
 const SSE = require('express-sse');
 const authRoutes = require('./routes/authRoutes');
-const pushSubscriptionRoutes = require('./routes/pushSubscriptionRoutes');
 const stripeRoutes = require('./routes/stripeRoutes'); // Add this line
 
 const app = express();
@@ -29,14 +26,8 @@ app.use(express.json());
 // Use task routes
 app.use('/api', taskRoutes);
 
-// Include notifications routes
-app.use('/api/notifications', notificationRoutes);
-
 // Include auth routes
 app.use('/api/auth', authRoutes);
-
-// Include push subscription routes
-app.use('/api/push-subscription', pushSubscriptionRoutes);
 
 // Use Stripe routes
 app.use('/api', stripeRoutes); // This will make the webhook available at /webhook
@@ -50,15 +41,9 @@ if (!process.env.MONGODB_URI) {
 
 const sse = new SSE();
 
-app.get('/notifications/stream', (req, res) => {
-  console.log('New SSE connection established');
-  sse.init(req, res);
-});
-
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => {
     console.log('Connected to MongoDB');
-    scheduleAllNotifications(sse);
   })
   .catch((error) => console.error('Error connecting to MongoDB:', error));
 

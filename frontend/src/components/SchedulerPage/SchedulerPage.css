@@ -67,3 +67,14 @@
         font-size: 12px;
     }
 }
+
+.MuiPopover-root .MuiButton-root.delete {
+    color: white!important;
+    background-color: #d32f2f!important;
+}
+
+.MuiPopover-root .MuiButton-root.cancel {
+    color: white!important;
+    margin-left: .5rem;
+    background-color: lightgray!important;
+}

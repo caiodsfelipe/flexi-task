@@ -33,7 +33,8 @@ const SchedulerPage = () => {
     // Handle submitting an event (create or update)
     const handleConfirm = useCallback((event, action) => {
         console.log('Confirmed event:', event, 'Action:', action);
-        const { event_id, id, title, start, end, priority, notificationTime, allDay, ...otherFields } = event;
+        const { event_id, id, title, start, end, priority, allDay, ...otherFields } = event;
+        const isAllDay = allDay === '1' || allDay === true;
         const apiCall = action === 'edit' ? memoizedUpdateTask : memoizedCreateTask;
 
         const startDate = new Date(start);
@@ -73,9 +74,8 @@ const SchedulerPage = () => {
             priority,
             color: event.checked ? '#6EACDA' : color, // Preserve blue color for checked events
             textColor: event.checked ? '#FFFFFF' : textColor,
-            notificationTime: parseInt(notificationTime, 10),
             checked: event.checked || false,
-            allDay
+            allDay: isAllDay
         };
 
         console.log('Event to submit:', eventToSubmit);
@@ -360,7 +360,7 @@ const SchedulerPage = () => {
                                 deletable={true}
                                 resizable={true}
                                 month={{ 
-                                    weekDays: [0, 1, 2, 3, 4, 5], 
+                                    weekDays: [0, 1, 2, 3, 4, 5, 6], 
                                     weekStartOn: 6, 
                                     startHour: 1, 
                                     endHour: 26,
@@ -368,7 +368,7 @@ const SchedulerPage = () => {
                                     disableGoToDay: false
                                 }}
                                 week={{ 
-                                    weekDays: [0, 1, 2, 3, 4, 5], 
+                                    weekDays: [0, 1, 2, 3, 4, 5, 6], 
                                     weekStartOn: 6, 
                                     startHour: 1, 
                                     endHour: 26,
@@ -386,20 +386,8 @@ const SchedulerPage = () => {
                                     { name: "title", type: "input", config: { label: "What do you need to do?", required: true } },
                                     { name: "start", type: "date", config: { label: "When do you need to do it?", required: true } },
                                     { name: "end", type: "date", config: { label: "When will you finish it?", required: true } },
-                                    { name: "allDay", type: "select", config: { label: "Is this an all-day event?", options: [{ value: true, text: "Yes" }, { value: false, text: "No" }] } },
-                                    { name: "priority", type: "select", config: { label: "How important is this task?", options: priorityOptions, required: true } },
-                                    { name: "notificationTime", type: "select", config: { 
-                                        label: "How long before do you want to be notified?", 
-                                        options: [
-                                            { value: 5, text: "5 minutes before" },
-                                            { value: 10, text: "10 minutes before" },
-                                            { value: 15, text: "15 minutes before" },
-                                            { value: 30, text: "30 minutes before" },
-                                            { value: 60, text: "1 hour before" },
-                                            { value: 120, text: "2 hours before" },
-                                            { value: 1440, text: "1 day before" }
-                                        ]
-                                    }}
+                                    { name: "allDay", type: "select", config: { label: "Is this an all-day event?", options: [{ value: '1', text: "Yes" }, { value: '0', text: "No" }] } },
+                                    { name: "priority", type: "select", config: { label: "How important is this task?", options: priorityOptions, required: true } }
                                 ]}
                             />
                         </ErrorBoundary>

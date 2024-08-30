@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import HomePage from './components/HomePage/HomePage';
 import SchedulerPage from './components/SchedulerPage/SchedulerPage';
 import Login from './components/Auth/Login';
@@ -9,11 +9,6 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-import Badge from '@mui/material/Badge';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import SettingsIcon from '@mui/icons-material/Settings';
-import NotificationsDialog from './components/Configuration/NotificationsDialog';
-import SettingsDialog from './components/Configuration/SettingsDialog';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import BottomNavigation from '@mui/material/BottomNavigation';
@@ -43,12 +38,24 @@ const StyledIconButton = styled(IconButton)(({ theme }) => ({
   },
 }));
 
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated, loading } = useAuth();
+  const location = useLocation();
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return children;
+};
+
 function AppContent() {
-  const { loading } = useAuth();
-  const [openNotifications, setOpenNotifications] = useState(false);
-  const [openSettings, setOpenSettings] = useState(false);
-  const [notifications] = useState([]);
-  const [unreadCount, setUnreadCount] = useState(0);
+  const { loading, user } = useAuth();
+  const [setOpenSettings] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -57,24 +64,19 @@ function AppContent() {
   if (loading) {
     return <div>Loading...</div>;
   }
-
-  const handleNotificationClick = () => {
-    setOpenNotifications(true);
-    setUnreadCount(0);
-  };
   
   const theme = createTheme({
     palette: {
       primary: {
         main: '#6EACDA',
         light: '#757de8',
-        dark: '#002984',
+        dark: '#6EACDA',
         contrastText: '#ffffff',
       },
       secondary: {
         main: '#6EACDA',
         light: '#757de8',
-        dark: '#002984',
+        dark: '#6EACDA',
         contrastText: '#ffffff',
       },
       background: {
@@ -104,32 +106,14 @@ function AppContent() {
               backgroundColor: 'var(--primary-color)',
               color: 'var(--button-primary-text-color)',
               '&:hover': {
-                backgroundColor: 'var(--primary-dark)',
+                backgroundColor: 'var(--primary-color)',
               },
             },
             '&.MuiButton-containedSecondary': {
-              backgroundColor: 'var(--button-secondary-text-color)',
+              backgroundColor: 'var(--button-secondary-bg)',
               color: 'var(--button-secondary-text-color)',
               '&:hover': {
-                backgroundColor: 'var(--secondary-dark)',
-              },
-            },
-          },
-          outlined: {
-            '&.MuiButton-outlinedPrimary': {
-              color: 'var(--primary-color)',
-              borderColor: 'var(--primary-color)',
-              '&:hover': {
-                backgroundColor: 'var(--button-primary-bg-hover)',
-                color: 'var(--button-primary-text-color)',
-              },
-            },
-            '&.MuiButton-outlinedSecondary': {
-              color: 'var(--button-secondary-text-color)',
-              borderColor: 'var(--button-secondary-text-color)',
-              '&:hover': {
-                backgroundColor: 'var(--button-secondary-bg-hover)',
-                color: 'var(--button-secondary-text-color)',
+                backgroundColor: 'var(--button-secondary-bg)',
               },
             },
           },
@@ -161,36 +145,39 @@ function AppContent() {
               }} 
               className="top-nav-item"
             />
-            <StyledIconButton
-              onClick={handleNotificationClick}
-              aria-label="notifications"
-              className="top-nav-item"
-            >
-              <Badge badgeContent={unreadCount} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </StyledIconButton>
           </StyledToolbar>
         </StyledAppBar>
       )}
-      <Box sx={{ paddingTop: isHomePage ? 0 : '16px' }}> {/* Adjust padding based on whether it's the homepage */}
+      <Box sx={{ paddingTop: isHomePage ? 0 : '16px' }}>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/scheduler" element={<SchedulerPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/account" element={<AccountManagement />} />
+          <Route
+            path="/scheduler"
+            element={
+              <ProtectedRoute>
+                <SchedulerPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/account"
+            element={
+              <ProtectedRoute>
+                <AccountManagement />
+              </ProtectedRoute>
+            }
+          />
+          {/* Add a catch-all route for any undefined routes */}
+          <Route
+            path="*"
+            element={
+              <Navigate to="/" replace />
+            }
+          />
         </Routes>
-        <NotificationsDialog
-          open={openNotifications}
-          onClose={() => setOpenNotifications(false)}
-          notifications={notifications}
-        />
-        <SettingsDialog
-          open={openSettings}
-          onClose={() => setOpenSettings(false)}
-        />
-        {!isHomePage && (
+        {!isHomePage && user && (
           <NavigationBar 
             setOpenSettings={setOpenSettings}
           />

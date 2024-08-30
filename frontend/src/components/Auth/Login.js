@@ -15,7 +15,7 @@ const Login = () => {
     if (isAuthenticated) {
       navigate('/scheduler');
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated]); // Remove navigate from the dependency array
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,7 +26,7 @@ const Login = () => {
         localStorage.setItem('token', response.data.token);
         setUser(response.data.user);
         setIsAuthenticated(true);
-        navigate('/scheduler');
+        // Remove the navigate call from here
       } else {
         console.error('No token received from login');
       }
